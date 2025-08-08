@@ -140,3 +140,7 @@ vite.config.ts.timestamp-*
 
 # MacOS
 .DS_Store
+
+# Puppeteer
+.session/*
+!.session/git.keep

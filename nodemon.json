@@ -1,6 +1,9 @@
 {
   "ext": "ts js json",
-  "watch": ["src"],
+  "watch": [
+    "src",
+    ".env"
+  ],
   "execMap": {
     "ts": "tsx"
   }

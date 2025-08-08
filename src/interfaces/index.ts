@@ -3,8 +3,9 @@ export type ChapterPerformanceReport = {
     totalMembers: number;
     zeroActivity: number;
     lowActivity: number;
-    zeroActivityList?: string[];
-    lowActivityList?: string[];
+    membersList: string[];
+    zeroActivityList: string[];
+    lowActivityList: string[];
   };
   socialMedia: {
     totalPosts: number;
@@ -24,11 +25,20 @@ export type ChapterPerformanceReport = {
     quick: number;
     unknown: number;
     membersSubmitted: number;
-    submittedBy?: string[];
+    submittedBy: string[];
   };
-  trainings: {
-    count: number;
-    attendees?: string[];
+  events: {
+    total: number;
+    training: number;
+    seminar: number;
+    mixer: number;
+    show: number;
+    openMic: number;
+    promoParty: number;
+    other: number;
+    listeningViewing: number;
+    membersSubmitted: number;
+    submittedBy: string[];
   };
   referralsAndBusinessBucks: {
     referrals: number;
@@ -36,32 +46,29 @@ export type ChapterPerformanceReport = {
   };
 };
 
-export type EventRecord = {
-  id: number;
-  sender: string;
-  receiver: string;
-  type: string;
-  date: string;
+export type EventActivity = {
+  attendingMember: string;
+  attendingMemberName: string;
+  eventBy: string;
+  eventType: string;
 };
 
 export type MemberActivity = {
-  id: number;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
+  name: string;
   sessions: number;
   referrals: number;
-  business_bucks: number | null;
-  event_attendance: number;
+  businessBucks: number;
+  eventAttendance: number;
   posts: number;
   visitors: number;
   total: number;
-  attendance: string;
 };
 
-export type SessionRecord = {
-  id: number;
-  sender: string;
-  receiver: string;
+export type SessionActivity = {
+  submittedBy: string;
+  submittedByName: string;
+  sessionWith: string;
   type: string;
-  date: string;
 };
