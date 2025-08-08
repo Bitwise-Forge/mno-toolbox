@@ -1,0 +1,9 @@
+# Store the list of initially staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+# Run format and lint commands
+pnpm format
+pnpm lint
+
+# Add the originally staged files back, including any changes made by the formatter and linter
+echo "$STAGED_FILES" | xargs git add

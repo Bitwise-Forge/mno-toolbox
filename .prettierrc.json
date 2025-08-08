@@ -1,0 +1,17 @@
+{
+  "arrowParens": "avoid",
+  "bracketSameLine": false,
+  "bracketSpacing": true,
+  "importOrder": ["<TYPES>", "<THIRD_PARTY_MODULES>", "", "<TYPES>^[.|..|@]", "^@/", "^[../]", "^[./]"],
+  "importOrderParserPlugins": ["typescript"],
+  "importOrderTypeScriptVersion": "5.9.2",
+  "jsxSingleQuote": true,
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "printWidth": 135,
+  "quoteProps": "as-needed",
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "useTabs": false
+}

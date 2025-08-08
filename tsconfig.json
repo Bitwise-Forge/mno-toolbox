@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    /** Base Options */
+    "allowJs": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "lib": ["ESNext"],
+    "paths": { "@/*": ["./src/*"] },
+    "moduleDetection": "force",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "target": "ESNext",
+
+    /** Strictness */
+    "checkJs": true,
+    "noUncheckedIndexedAccess": false,
+    "strict": true,
+
+    /** Transpile using Bundler (not tsc) */
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "noEmit": true,
+    "noImplicitAny": false,
+    "noImplicitOverride": true
+  },
+  "include": ["src", "*.js"],
+  "exclude": ["node_modules"]
+}

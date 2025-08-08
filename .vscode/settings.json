@@ -1,0 +1,10 @@
+{
+  "cSpell.words": ["dbaeumer", "esbenp", "ianvs", "prettiercache", "supergroups", "unblinded", "yoavbls"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "never",
+    "source.fixAll.eslint": "always"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "eslint.useFlatConfig": true
+}
