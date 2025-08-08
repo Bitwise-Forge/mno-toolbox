@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 import type { ChapterPerformanceReport } from '@/interfaces';
 import { dedent } from '@/utils/stringUtils';
 
@@ -73,10 +75,11 @@ export default class ChapterReportGenerator {
   }
 
   get report() {
+    const reportDate = dayjs().format('MM/DD/YYYY hh:mm A');
     const lines: string[] = [
       '\n',
       '\n',
-      '📣 Weekly Chapter Performance Report\n',
+      `📣 Weekly Chapter Performance Report (as of ${reportDate})\n`,
       this.membersSubReport,
       '\n',
       '\n',

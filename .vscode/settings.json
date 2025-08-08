@@ -1,5 +1,17 @@
 {
-  "cSpell.words": ["dbaeumer", "domhandler", "esbenp", "ianvs", "networkidle", "prettiercache", "supergroups", "unblinded", "yoavbls"],
+  "cSpell.words": [
+    "dbaeumer",
+    "domhandler",
+    "esbenp",
+    "ianvs",
+    "networkidle",
+    "parseable",
+    "prettiercache",
+    "supergroups",
+    "unblinded",
+    "yoavbls",
+    "yourpassword"
+  ],
   "editor.codeActionsOnSave": {
     "source.fixAll": "never",
     "source.fixAll.eslint": "always"

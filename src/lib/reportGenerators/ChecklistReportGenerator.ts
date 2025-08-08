@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 import type { WeeklyChecklistReport } from '@/interfaces';
 import { dedent } from '@/utils/stringUtils';
 
@@ -14,13 +16,14 @@ export default class ChecklistReportGenerator {
 
     return [
       `Total Members: ${membersList.length}`,
-      `Checklists Created: ${totalChecklists} (${checklistPercentage}%)`,
-      `Checklists Missing: ${membersList.length - totalChecklists} (${missingChecklistPercentage}%)`,
+      `Weekly Checklists Created: ${totalChecklists} (${checklistPercentage}%)`,
+      `Weekly Checklists Missing: ${membersList.length - totalChecklists} (${missingChecklistPercentage}%)`,
     ].join('\n');
   }
 
   get report() {
-    const lines: string[] = ['\n', '\n', '📣 Weekly Checklist Report\n', this.membersSubReport];
+    const reportDate = dayjs().format('MM/DD/YYYY hh:mm A');
+    const lines: string[] = ['\n', '\n', `📣 Weekly Checklist Report (as of ${reportDate})\n`, this.membersSubReport];
 
     return dedent`${lines.join('')}`;
   }
@@ -28,8 +31,10 @@ export default class ChecklistReportGenerator {
   get unblindedReport() {
     const { membersList, submittedBy } = this._reportData;
 
+    const members = membersList.length ? membersList.join(', ') : 'None';
     const checklistSubmitters = submittedBy.length ? submittedBy.join(', ') : 'None';
-    const missingChecklists = membersList.filter(member => !submittedBy.includes(member));
+    const missingChecklistsArr = membersList.filter(member => !submittedBy.includes(member));
+    const missingChecklists = missingChecklistsArr.length ? missingChecklistsArr.join(', ') : 'None';
 
     const lines = [
       '\n',
@@ -39,7 +44,7 @@ export default class ChecklistReportGenerator {
       '\n',
       '🔍 Unblinded Data:\n',
       'Members List:\n',
-      membersList,
+      members,
       '\n',
       '\n',
       'Checklist Submitters:\n',
