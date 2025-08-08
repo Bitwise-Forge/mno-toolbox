@@ -1,9 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { Cheerio } from 'cheerio';
-import type { Element } from 'domhandler';
 import type { Browser, Page } from 'puppeteer';
-import { load } from 'cheerio';
 import puppeteer from 'puppeteer';
 
 import env from '@/utils/env';
@@ -11,18 +8,15 @@ import env from '@/utils/env';
 const BASE_URL = env.MNO_BASE_URL;
 const LOGIN_URL = `${BASE_URL}/${env.MNO_LOGIN_PATH}`;
 const DASHBOARD_URL = `${BASE_URL}/${env.MNO_DASHBOARD_PATH}`;
-const EVENT_REPORT_URL = `${BASE_URL}/${env.MNO_EVENT_REPORT_PATH}`;
-const SM_REPORT_URL = `${BASE_URL}/${env.MNO_SM_REPORT_PATH}`;
-const SESSION_REPORT_URL = `${BASE_URL}/${env.MNO_SESSION_REPORT_PATH}`;
 
 const STORAGE_FILE = path.join(process.cwd(), '.session', 'localStorage.json');
 
 export class Scraper {
   private _browser: Browser | null;
   private _page: Page | null;
-  private _scope: 'member' | 'event' | 'session';
+  private _scope: 'member' | 'event' | 'session' | 'weekly-checklist';
 
-  constructor(scope: 'member' | 'event' | 'session') {
+  constructor(scope: 'member' | 'event' | 'session' | 'weekly-checklist') {
     this._browser = null;
     this._page = null;
     this._scope = scope;
@@ -49,6 +43,10 @@ export class Scraper {
   async close(): Promise<void> {
     if (!this._browser) return;
     await this._browser.close();
+  }
+
+  get page(): Page | null {
+    return this._page;
   }
 
   private async loadLocalStorage(): Promise<void> {
@@ -145,81 +143,6 @@ export class Scraper {
     } catch (error) {
       console.error('Login failed or timed out:', error);
       throw new Error('Login failed - check credentials or network connection');
-    }
-  }
-
-  async getSmReport(): Promise<Cheerio<Element>> {
-    if (!this._page) {
-      throw new Error('Page not initialized, did you call init() first?');
-    }
-
-    console.log('Navigating to SM Report page...');
-
-    try {
-      await this._page.goto(SM_REPORT_URL, { waitUntil: 'networkidle0' });
-
-      const $ = load(await this._page.content());
-      const table = $('table');
-
-      if (table.length === 0) {
-        throw new Error('SM Report table not found - page may have changed or access denied');
-      }
-
-      console.log('Successfully extracted table from SM Report page');
-      return table;
-    } catch (error) {
-      console.error('Error navigating to SM Report page:', error);
-      throw error;
-    }
-  }
-
-  async getSessionReport(): Promise<Cheerio<Element>> {
-    if (!this._page) {
-      throw new Error('Page not initialized, did you call init() first?');
-    }
-
-    console.log('Navigating to Session Report page...');
-
-    try {
-      await this._page.goto(SESSION_REPORT_URL, { waitUntil: 'networkidle0' });
-
-      const $ = load(await this._page.content());
-      const table = $('table').last();
-
-      if (table.length === 0) {
-        throw new Error('Session Report table not found - page may have changed or access denied');
-      }
-
-      console.log('Successfully extracted table from Session Report page');
-      return table;
-    } catch (error) {
-      console.error('Error navigating to Session Report page:', error);
-      throw error;
-    }
-  }
-
-  async getEventReport(): Promise<Cheerio<Element>> {
-    if (!this._page) {
-      throw new Error('Page not initialized, did you call init() first?');
-    }
-
-    console.log('Navigating to Event Report page...');
-
-    try {
-      await this._page.goto(EVENT_REPORT_URL, { waitUntil: 'networkidle0' });
-
-      const $ = load(await this._page.content());
-      const table = $('table').last();
-
-      if (table.length === 0) {
-        throw new Error('Event Report table not found - page may have changed or access denied');
-      }
-
-      console.log('Successfully extracted table from Event Report page');
-      return table;
-    } catch (error) {
-      console.error('Error navigating to Event Report page:', error);
-      throw error;
     }
   }
 }

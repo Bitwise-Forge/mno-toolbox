@@ -1,14 +1,19 @@
 import type { Cheerio } from 'cheerio';
 import type { Element } from 'domhandler';
+import type { Page } from 'puppeteer';
 import { load } from 'cheerio';
 
 import type { ChapterPerformanceReport, SessionActivity } from '@/interfaces';
 import { Scraper } from '@/lib/Scraper';
+import env from '@/utils/env';
 
 type SessionCounts = Omit<ChapterPerformanceReport['sessions'], 'total' | 'membersSubmitted' | 'submittedBy'>;
 
+const SESSION_REPORT_URL = `${env.MNO_BASE_URL}/${env.MNO_SESSION_REPORT_PATH}`;
+
 export default class SessionDataParser {
   private _scraper: Scraper;
+  private _page: Page | null;
   private _sessionReportHtml: Cheerio<Element> | null;
   private _sessionReportJson: SessionActivity[];
   private _validSessions: SessionActivity[];
@@ -16,6 +21,7 @@ export default class SessionDataParser {
 
   constructor() {
     this._scraper = new Scraper('session');
+    this._page = null;
     this._sessionReportHtml = null;
     this._sessionReportJson = [];
     this._validSessions = [];
@@ -24,12 +30,39 @@ export default class SessionDataParser {
 
   async init(): Promise<void> {
     await this._scraper.init();
-    this._sessionReportHtml = await this._scraper.getSessionReport();
-    await this._scraper.close();
+    this._page = this._scraper.page;
+    this._sessionReportHtml = await this.getSessionReport();
 
     this.parse();
     this.validSessions();
     this.countSessionTypes();
+  }
+
+  private async getSessionReport(): Promise<Cheerio<Element>> {
+    if (!this._page) {
+      throw new Error('Page not initialized, did you call init() first?');
+    }
+
+    console.log('Navigating to Session Report page...');
+
+    try {
+      await this._page.goto(SESSION_REPORT_URL, { waitUntil: 'networkidle0' });
+
+      const $ = load(await this._page.content());
+      const table = $('table').last();
+
+      if (table.length === 0) {
+        throw new Error('Session Report table not found - page may have changed or access denied');
+      }
+
+      console.log('Successfully extracted table from Session Report page');
+      return table;
+    } catch (error) {
+      console.error('Error navigating to Session Report page:', error);
+      throw error;
+    } finally {
+      await this._scraper.close();
+    }
   }
 
   private parse(): void {

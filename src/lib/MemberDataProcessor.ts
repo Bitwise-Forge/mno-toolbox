@@ -1,26 +1,60 @@
 import type { Cheerio } from 'cheerio';
 import type { Element } from 'domhandler';
+import type { Page } from 'puppeteer';
 import { load } from 'cheerio';
 
 import type { ChapterPerformanceReport, MemberActivity } from '@/interfaces';
 import { Scraper } from '@/lib/Scraper';
+import env from '@/utils/env';
+
+const SM_REPORT_URL = `${env.MNO_BASE_URL}/${env.MNO_SM_REPORT_PATH}`;
 
 export default class MemberDataParser {
   private _scraper: Scraper;
+  private _page: Page | null;
   private _memberReportHtml: Cheerio<Element> | null;
   private _memberReportJson: MemberActivity[];
 
   constructor() {
     this._scraper = new Scraper('member');
+    this._page = null;
     this._memberReportHtml = null;
     this._memberReportJson = [];
   }
 
   async init(): Promise<void> {
     await this._scraper.init();
-    this._memberReportHtml = await this._scraper.getSmReport();
-    await this._scraper.close();
+    this._page = this._scraper.page;
+
+    this._memberReportHtml = await this.getSmReport();
     this.parse();
+  }
+
+  private async getSmReport(): Promise<Cheerio<Element>> {
+    if (!this._page) {
+      throw new Error('Page not initialized, did you call init() first?');
+    }
+
+    console.log('Navigating to SM Report page...');
+
+    try {
+      await this._page.goto(SM_REPORT_URL, { waitUntil: 'networkidle0' });
+
+      const $ = load(await this._page.content());
+      const table = $('table');
+
+      if (table.length === 0) {
+        throw new Error('SM Report table not found - page may have changed or access denied');
+      }
+
+      console.log('Successfully extracted table from SM Report page');
+      return table;
+    } catch (error) {
+      console.error('Error navigating to SM Report page:', error);
+      throw error;
+    } finally {
+      await this._scraper.close();
+    }
   }
 
   private parse(): void {

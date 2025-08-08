@@ -1,14 +1,19 @@
 import type { Cheerio } from 'cheerio';
 import type { Element } from 'domhandler';
+import type { Page } from 'puppeteer';
 import { load } from 'cheerio';
 
 import type { ChapterPerformanceReport, EventActivity } from '@/interfaces';
 import { Scraper } from '@/lib/Scraper';
+import env from '@/utils/env';
 
 type EventCounts = Omit<ChapterPerformanceReport['events'], 'total' | 'membersSubmitted' | 'submittedBy'>;
 
+const EVENT_REPORT_URL = `${env.MNO_BASE_URL}/${env.MNO_EVENT_REPORT_PATH}`;
+
 export default class EventDataParser {
   private _scraper: Scraper;
+  private _page: Page | null;
   private _eventReportHtml: Cheerio<Element> | null;
   private _eventReportJson: EventActivity[];
   private _validEvents: EventActivity[];
@@ -16,6 +21,7 @@ export default class EventDataParser {
 
   constructor() {
     this._scraper = new Scraper('event');
+    this._page = null;
     this._eventReportHtml = null;
     this._eventReportJson = [];
     this._validEvents = [];
@@ -24,12 +30,39 @@ export default class EventDataParser {
 
   async init(): Promise<void> {
     await this._scraper.init();
-    this._eventReportHtml = await this._scraper.getEventReport();
-    await this._scraper.close();
+    this._page = this._scraper.page;
+    this._eventReportHtml = await this.getEventReport();
 
     this.parse();
     this.validEvents();
     this.countEventTypes();
+  }
+
+  private async getEventReport(): Promise<Cheerio<Element>> {
+    if (!this._page) {
+      throw new Error('Page not initialized, did you call init() first?');
+    }
+
+    console.log('Navigating to Event Report page...');
+
+    try {
+      await this._page.goto(EVENT_REPORT_URL, { waitUntil: 'networkidle0' });
+
+      const $ = load(await this._page.content());
+      const table = $('table').last();
+
+      if (table.length === 0) {
+        throw new Error('Event Report table not found - page may have changed or access denied');
+      }
+
+      console.log('Successfully extracted table from Event Report page');
+      return table;
+    } catch (error) {
+      console.error('Error navigating to Event Report page:', error);
+      throw error;
+    } finally {
+      await this._scraper.close();
+    }
   }
 
   private parse(): void {
