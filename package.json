@@ -8,6 +8,8 @@
     "clean": "rm -rf node_modules",
     "dev": "nodemon --env-file=./.env -r dotenv/config src/index.ts",
     "format": "prettier . --write  --cache --cache-location node_modules/.cache/.prettiercache",
+    "gen-chapter-report": "tsx --env-file=./.env -r dotenv/config src/index.ts chapter",
+    "gen-checklist-report": "tsx --env-file=./.env -r dotenv/config src/index.ts checklist",
     "lint": "eslint . --fix --cache --cache-location node_modules/.cache/.eslintcache"
   },
   "author": "Chris Human <42072991+chrishuman0923@users.noreply.github.com>",

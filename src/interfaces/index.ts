@@ -72,3 +72,16 @@ export type SessionActivity = {
   sessionWith: string;
   type: string;
 };
+
+export type WeeklyChecklistReport = {
+  totalChecklists: number;
+  checklistPercentage: number;
+  submittedBy: string[];
+  membersList: string[];
+};
+
+export type WeeklyChecklist = {
+  member: string;
+  memberName: string;
+  date: string;
+};

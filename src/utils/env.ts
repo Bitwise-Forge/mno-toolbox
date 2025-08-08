@@ -12,11 +12,14 @@ export default createEnv({
     MNO_SESSION_REPORT_PATH: z.string().min(1),
     MNO_SM_REPORT_PATH: z.string().min(1),
     MNO_USERNAME: z.email(),
+    MNO_WEEKLY_CHECKLIST_PATH: z.string().min(1),
     NODE_ENV: z.enum(['development', 'production']).default('development'),
     PUPPETEER_HEADLESS_MODE: z
       .string()
       .transform(val => val === 'true')
       .default(false),
+    REPORT_START_DATE: z.string().min(1),
+    REPORT_END_DATE: z.string().min(1),
   },
   runtimeEnv: process.env,
 });

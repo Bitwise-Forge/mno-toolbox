@@ -1,7 +1,7 @@
 import type { ChapterPerformanceReport } from '@/interfaces';
 import { dedent } from '@/utils/stringUtils';
 
-export default class ReportGenerator {
+export default class ChapterReportGenerator {
   private _reportData: ChapterPerformanceReport;
 
   constructor(reportData: ChapterPerformanceReport) {
