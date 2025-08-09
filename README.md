@@ -1,8 +1,8 @@
 # MNO Chapter Reports Toolkit (CLI)
 
-![Node](https://img.shields.io/badge/Node-%E2%89%A520-339933?logo=node.js&logoColor=white)
-![pnpm](https://img.shields.io/badge/pnpm-10.14.0-ffd34e?logo=pnpm&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Node](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=Node&query=$.engines.node&logo=node.js&logoColor=white&color=339933)
+![pnpm](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=pnpm&query=$.packageManager&logo=pnpm&logoColor=white&color=ffd34e)
+![TypeScript](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=TypeScript&query=$.devDependencies.typescript&logo=typescript&logoColor=white&color=3178C6)
 
 ## Overview
 
@@ -183,3 +183,7 @@ pnpm gen-checklist-report
 - Credentials live only in your local `.env` and never leave your machine.
 - Everything runs locally; nothing is deployed or shared.
 - Avoid committing `.env` or `.session` data to version control.
+
+### License
+
+This project is licensed under the MIT License. See `LICENSE` for details.
