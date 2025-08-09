@@ -1,8 +1,8 @@
 # MNO Chapter Reports Toolkit (CLI)
 
-![Node](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=Node&query=$.engines.node&logo=node.js&logoColor=white&color=339933)
-![pnpm](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=pnpm&query=$.packageManager&logo=pnpm&logoColor=white&color=ffd34e)
-![TypeScript](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=TypeScript&query=$.devDependencies.typescript&logo=typescript&logoColor=white&color=3178C6)
+![Node](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=Node&query=%24.engines.node&logo=node.js&logoColor=white&color=339933&cacheSeconds=300)
+![pnpm](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=pnpm&query=%24.packageManager&logo=pnpm&logoColor=white&color=ffd34e&cacheSeconds=300)
+![TypeScript](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=TypeScript&query=%24.devDependencies.typescript&logo=typescript&logoColor=white&color=3178C6&cacheSeconds=300)
 
 ## Overview
 
