@@ -1,5 +1,9 @@
 # MNO Chapter Reports Toolkit (CLI)
 
+![Node](https://img.shields.io/badge/Node-%E2%89%A520-339933?logo=node.js&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-10.14.0-ffd34e?logo=pnpm&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+
 ## Overview
 
 MNO (Music Network One) is a referral-focused networking organization made up of business professionals and musicians. Members meet weekly — via Zoom or in person — to pass referrals, stay visible, and support one another by “Playing It Forward”. This philosophy means promoting others without expecting anything in return, primarily through online visibility and real-world referrals.
