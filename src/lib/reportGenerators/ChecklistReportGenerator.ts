@@ -23,7 +23,15 @@ export default class ChecklistReportGenerator {
 
   get report() {
     const reportDate = dayjs().format('MM/DD/YYYY hh:mm A');
-    const lines: string[] = ['\n', '\n', `📣 Weekly Checklist Report (as of ${reportDate})\n`, this.membersSubReport];
+    const lines: string[] = [
+      '\n',
+      '\n',
+      '--------------------------------',
+      '\n',
+      '\n',
+      `📣 Weekly Checklist Report (as of ${reportDate})\n`,
+      this.membersSubReport,
+    ];
 
     return dedent`${lines.join('')}`;
   }

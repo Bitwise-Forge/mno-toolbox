@@ -79,6 +79,9 @@ export default class ChapterReportGenerator {
     const lines: string[] = [
       '\n',
       '\n',
+      '--------------------------------',
+      '\n',
+      '\n',
       `📣 Weekly Chapter Performance Report (as of ${reportDate})\n`,
       this.membersSubReport,
       '\n',
