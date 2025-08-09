@@ -4,6 +4,7 @@ import type { Page } from 'puppeteer';
 import { load } from 'cheerio';
 
 import type { ChapterPerformanceReport, MemberActivity } from '@/interfaces';
+import type { ScraperScope } from '@/lib/Scraper';
 import { Scraper } from '@/lib/Scraper';
 import env from '@/utils/env';
 
@@ -11,15 +12,16 @@ const SM_REPORT_URL = `${env.MNO_BASE_URL}/${env.MNO_SM_REPORT_PATH}`;
 
 export default class MemberDataParser {
   private _scraper: Scraper;
+  private _scope: ScraperScope = 'members';
   private _page: Page | null;
   private _memberReportHtml: Cheerio<Element> | null;
-  private _memberReportJson: MemberActivity[];
+  private _memberReportData: MemberActivity[];
 
   constructor() {
-    this._scraper = new Scraper('member');
+    this._scraper = new Scraper(this._scope);
     this._page = null;
     this._memberReportHtml = null;
-    this._memberReportJson = [];
+    this._memberReportData = [];
   }
 
   async init(): Promise<void> {
@@ -53,7 +55,7 @@ export default class MemberDataParser {
       console.error('Error navigating to SM Report page:', error);
       throw error;
     } finally {
-      await this._scraper.close();
+      await this._scraper.close(this._scope);
     }
   }
 
@@ -102,14 +104,14 @@ export default class MemberDataParser {
         total,
       };
 
-      this._memberReportJson.push(memberActivity);
+      this._memberReportData.push(memberActivity);
     });
 
-    console.log(`Successfully parsed ${this._memberReportJson.length} members from table`);
+    console.log(`Successfully parsed ${this._memberReportData.length} members from table`);
   }
 
   private get uniqueMembersMinusEp(): MemberActivity[] {
-    return Array.from(new Set(this._memberReportJson.filter(({ name }) => !name.toLowerCase().startsWith('executive'))));
+    return Array.from(new Set(this._memberReportData.filter(({ name }) => !name.toLowerCase().startsWith('executive'))));
   }
 
   private get totalMembers(): number {
@@ -140,11 +142,11 @@ export default class MemberDataParser {
   }
 
   private get totalReferrals(): number {
-    return this._memberReportJson.reduce((acc, member) => acc + member.referrals, 0);
+    return this._memberReportData.reduce((acc, member) => acc + member.referrals, 0);
   }
 
   private get totalBusinessBucks(): number {
-    return this._memberReportJson.reduce((acc, member) => acc + member.businessBucks, 0);
+    return this._memberReportData.reduce((acc, member) => acc + member.businessBucks, 0);
   }
 
   get memberReportData(): ChapterPerformanceReport['members'] {

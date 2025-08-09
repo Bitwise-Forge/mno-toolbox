@@ -3,6 +3,7 @@ import MemberDataProcessor from '@/lib/processors/MemberDataProcessor';
 import SessionDataProcessor from '@/lib/processors/SessionDataProcessor';
 import WeeklyChecklistProcessor from '@/lib/processors/WeeklyChecklistProcessor';
 import ChapterReportGenerator from '@/lib/reportGenerators/ChapterReportGenerator';
+import { Scraper } from '@/lib/Scraper';
 import ChecklistReportGenerator from './lib/reportGenerators/ChecklistReportGenerator';
 
 const generateChapterReport = async () => {
@@ -41,12 +42,16 @@ const main = async () => {
     return;
   }
 
-  if (reportType === 'chapter') {
-    await generateChapterReport();
-    return;
-  }
+  try {
+    if (reportType === 'chapter') {
+      await generateChapterReport();
+      return;
+    }
 
-  await generateChecklistReport();
+    await generateChecklistReport();
+  } finally {
+    await Scraper.shutdown();
+  }
 };
 
 main().catch(error => console.error(error));

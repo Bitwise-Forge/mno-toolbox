@@ -4,6 +4,7 @@ import type { Page } from 'puppeteer';
 import { load } from 'cheerio';
 
 import type { ChapterPerformanceReport, EventActivity } from '@/interfaces';
+import type { ScraperScope } from '@/lib/Scraper';
 import { Scraper } from '@/lib/Scraper';
 import env from '@/utils/env';
 
@@ -13,17 +14,18 @@ const EVENT_REPORT_URL = `${env.MNO_BASE_URL}/${env.MNO_EVENT_REPORT_PATH}`;
 
 export default class EventDataParser {
   private _scraper: Scraper;
+  private _scope: ScraperScope = 'events';
   private _page: Page | null;
   private _eventReportHtml: Cheerio<Element> | null;
-  private _eventReportJson: EventActivity[];
+  private _eventReportData: EventActivity[];
   private _validEvents: EventActivity[];
   private _counts: EventCounts;
 
   constructor() {
-    this._scraper = new Scraper('event');
+    this._scraper = new Scraper(this._scope);
     this._page = null;
     this._eventReportHtml = null;
-    this._eventReportJson = [];
+    this._eventReportData = [];
     this._validEvents = [];
     this._counts = { training: 0, seminar: 0, mixer: 0, show: 0, openMic: 0, promoParty: 0, other: 0, listeningViewing: 0 };
   }
@@ -61,7 +63,7 @@ export default class EventDataParser {
       console.error('Error navigating to Event Report page:', error);
       throw error;
     } finally {
-      await this._scraper.close();
+      await this._scraper.close(this._scope);
     }
   }
 
@@ -91,14 +93,14 @@ export default class EventDataParser {
 
       const eventActivity: EventActivity = { attendingMember, attendingMemberName, eventBy, eventType };
 
-      this._eventReportJson.push(eventActivity);
+      this._eventReportData.push(eventActivity);
     });
 
-    console.log(`Successfully parsed ${this._eventReportJson.length} events from table`);
+    console.log(`Successfully parsed ${this._eventReportData.length} events from table`);
   }
 
   private validEvents(): void {
-    this._validEvents = this._eventReportJson.filter(
+    this._validEvents = this._eventReportData.filter(
       ({ attendingMember, attendingMemberName }) =>
         !attendingMemberName.toLowerCase().startsWith('executive') && !attendingMember.toLowerCase().startsWith('no data'),
     );

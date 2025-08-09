@@ -5,6 +5,7 @@ import { load } from 'cheerio';
 import dayjs from 'dayjs';
 
 import type { MemberActivity, WeeklyChecklist, WeeklyChecklistReport } from '@/interfaces';
+import type { ScraperScope } from '@/lib/Scraper';
 import { Scraper } from '@/lib/Scraper';
 import env from '@/utils/env';
 
@@ -13,17 +14,18 @@ const WEEKLY_CHECKLIST_URL = `${env.MNO_BASE_URL}/${env.MNO_WEEKLY_CHECKLIST_PAT
 
 export default class WeeklyChecklistProcessor {
   private _scraper: Scraper;
+  private _scope: ScraperScope = 'weekly-checklist';
   private _page: Page | null;
   private _memberReportHtml: Cheerio<Element> | null;
-  private _memberReportJson: Pick<MemberActivity, 'firstName' | 'lastName' | 'name'>[];
+  private _memberReportData: Pick<MemberActivity, 'firstName' | 'lastName' | 'name'>[];
   private _weeklyChecklistHtml: Cheerio<Element> | null;
   private _weeklyChecklistJson: WeeklyChecklist[];
 
   constructor() {
-    this._scraper = new Scraper('weekly-checklist');
+    this._scraper = new Scraper(this._scope);
     this._page = null;
     this._memberReportHtml = null;
-    this._memberReportJson = [];
+    this._memberReportData = [];
     this._weeklyChecklistHtml = null;
     this._weeklyChecklistJson = [];
   }
@@ -93,7 +95,7 @@ export default class WeeklyChecklistProcessor {
       console.error('Error navigating to Weekly Checklist page:', error);
       throw error;
     } finally {
-      await this._scraper.close();
+      await this._scraper.close(this._scope);
     }
   }
 
@@ -123,10 +125,10 @@ export default class WeeklyChecklistProcessor {
 
       const memberActivity: Pick<MemberActivity, 'firstName' | 'lastName' | 'name'> = { firstName, lastName, name };
 
-      this._memberReportJson.push(memberActivity);
+      this._memberReportData.push(memberActivity);
     });
 
-    console.log(`Successfully parsed ${this._memberReportJson.length} members from table`);
+    console.log(`Successfully parsed ${this._memberReportData.length} members from table`);
   }
 
   private parseChecklist(): void {
@@ -160,7 +162,7 @@ export default class WeeklyChecklistProcessor {
 
   private get uniqueMembersMinusEp(): string[] {
     return Array.from(
-      new Set(this._memberReportJson.filter(({ name }) => !name.toLowerCase().startsWith('executive')).map(({ name }) => name)),
+      new Set(this._memberReportData.filter(({ name }) => !name.toLowerCase().startsWith('executive')).map(({ name }) => name)),
     );
   }
 

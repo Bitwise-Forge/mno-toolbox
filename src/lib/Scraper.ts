@@ -1,148 +1,143 @@
-import fs from 'node:fs';
 import path from 'node:path';
 import type { Browser, Page } from 'puppeteer';
 import puppeteer from 'puppeteer';
 
 import env from '@/utils/env';
 
+export type ScraperScope = 'members' | 'sessions' | 'events' | 'weekly-checklist';
+
 const BASE_URL = env.MNO_BASE_URL;
 const LOGIN_URL = `${BASE_URL}/${env.MNO_LOGIN_PATH}`;
 const DASHBOARD_URL = `${BASE_URL}/${env.MNO_DASHBOARD_PATH}`;
 
-const STORAGE_FILE = path.join(process.cwd(), '.session', 'localStorage.json');
-
 export class Scraper {
-  private _browser: Browser | null;
-  private _page: Page | null;
-  private _scope: 'member' | 'event' | 'session' | 'weekly-checklist';
+  private static _browser: Browser | null = null;
+  private static _launchPromise: Promise<Browser> | null = null;
+  private static _loginPromise: Promise<void> | null = null;
 
-  constructor(scope: 'member' | 'event' | 'session' | 'weekly-checklist') {
-    this._browser = null;
-    this._page = null;
+  private _page: Page | null;
+  private _scope: ScraperScope;
+
+  constructor(scope: ScraperScope) {
     this._scope = scope;
+    this._page = null;
+  }
+
+  private static async ensureBrowser(): Promise<Browser> {
+    if (this._browser?.connected) return this._browser;
+    if (this._launchPromise) return this._launchPromise;
+
+    this._launchPromise = (async () => {
+      try {
+        console.log('Launching browser...');
+
+        const browser = await puppeteer.launch({
+          headless: env.PUPPETEER_HEADLESS_MODE,
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          userDataDir: path.join(process.cwd(), '.session', 'chrome-profile'),
+        });
+
+        this._browser = browser;
+
+        this._browser.on('disconnected', () => {
+          Scraper._browser = null;
+          Scraper._launchPromise = null;
+          Scraper._loginPromise = null;
+        });
+
+        return browser;
+      } catch (error) {
+        this._launchPromise = null;
+        throw error;
+      }
+    })();
+
+    this._launchPromise.catch(error => {
+      console.error('Error launching browser:', error);
+      this._launchPromise = null;
+    });
+
+    return this._launchPromise;
+  }
+
+  private static async createConfiguredPage(browser: Browser): Promise<Page> {
+    const page = await browser.newPage();
+    page.setDefaultNavigationTimeout(15000);
+    page.setDefaultTimeout(15000);
+
+    return page;
+  }
+
+  private static async ensureLoggedIn(browser: Browser): Promise<void> {
+    if (this._loginPromise) return this._loginPromise;
+
+    this._loginPromise = (async () => {
+      const page = await this.createConfiguredPage(browser);
+
+      try {
+        await page.goto(DASHBOARD_URL, { waitUntil: 'networkidle0' });
+        const url = page.url();
+
+        if (!url.includes('login')) {
+          console.log('Already authenticated, skipping login...');
+          return;
+        }
+
+        console.log('Logging in...');
+        await page.goto(LOGIN_URL, { waitUntil: 'networkidle0' });
+        await page.waitForSelector('input[name="username"]');
+        await page.waitForSelector('input[name="password"]');
+        await page.type('input[name="username"]', env.MNO_USERNAME);
+        await page.type('input[name="password"]', env.MNO_PASSWORD);
+        await page.click('button[type="button"]');
+        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+      } finally {
+        await page.close();
+      }
+    })();
+
+    this._loginPromise.catch(error => {
+      console.error('Error logging in:', error);
+      this._loginPromise = null;
+    });
+
+    return this._loginPromise;
+  }
+
+  static async getSharedPage(scope: ScraperScope): Promise<Page> {
+    const browser = await this.ensureBrowser();
+    await this.ensureLoggedIn(browser);
+
+    console.error(`Creating configured page for ${scope}...`);
+    return await this.createConfiguredPage(browser);
+  }
+
+  static async shutdown(): Promise<void> {
+    if (!this._browser) return;
+
+    try {
+      await this._browser.close();
+    } finally {
+      this._browser = null;
+      this._launchPromise = null;
+      this._loginPromise = null;
+    }
   }
 
   async init(): Promise<void> {
-    console.log(`Initializing scraper for ${this._scope} scope...`);
-
-    this._browser = await puppeteer.launch({
-      headless: env.PUPPETEER_HEADLESS_MODE,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-
-    this._page = await this._browser.newPage();
-    this._page.setDefaultNavigationTimeout(15000);
-    this._page.setDefaultTimeout(15000);
-
-    await this.loadLocalStorage();
-
-    const isLoggedIn = await this.checkLoginStatus();
-    if (!isLoggedIn) await this.login();
+    this._page = await Scraper.getSharedPage(this._scope);
   }
 
-  async close(): Promise<void> {
-    if (!this._browser) return;
-    await this._browser.close();
+  async close(scope: ScraperScope): Promise<void> {
+    if (this._page) {
+      console.error(`Closing page for ${scope}...`);
+      await this._page.close();
+    }
+
+    this._page = null;
   }
 
   get page(): Page | null {
     return this._page;
-  }
-
-  private async loadLocalStorage(): Promise<void> {
-    if (!this._page) {
-      throw new Error('Page not initialized, did you call init() first?');
-    }
-
-    try {
-      const hasStorageFile = fs.existsSync(STORAGE_FILE);
-      if (!hasStorageFile) throw new Error('No localStorage file found');
-
-      const storageData = fs.readFileSync(STORAGE_FILE, 'utf8');
-      const localStorage = JSON.parse(storageData) as Record<string, string>;
-
-      await this._page.evaluateOnNewDocument(storage => {
-        for (const [key, value] of Object.entries(storage)) {
-          globalThis.localStorage.setItem(key, value);
-        }
-      }, localStorage);
-
-      console.log('Loaded browser session data from file');
-    } catch (error) {
-      console.error('Error loading browser session data from file:', error);
-    }
-  }
-
-  private async saveLocalStorage(): Promise<void> {
-    if (!this._page) {
-      throw new Error('Page not initialized, did you call init() first?');
-    }
-
-    try {
-      const localStorage = await this._page.evaluate(() => {
-        const storage: Record<string, string> = {};
-
-        for (let i = 0; i < globalThis.localStorage.length; i++) {
-          const key = globalThis.localStorage.key(i);
-          if (!key) continue;
-
-          const value = globalThis.localStorage.getItem(key);
-          if (!value) continue;
-
-          storage[key] = value;
-        }
-
-        return storage;
-      });
-
-      fs.writeFileSync(STORAGE_FILE, JSON.stringify(localStorage, null, 2));
-      console.log('Saved browser session data to file');
-    } catch (error) {
-      console.error('Error saving browser session data to file:', error);
-    }
-  }
-
-  private async checkLoginStatus(): Promise<boolean> {
-    if (!this._page) {
-      throw new Error('Page not initialized, did you call init() first?');
-    }
-
-    try {
-      await this._page.goto(DASHBOARD_URL, { waitUntil: 'networkidle0' });
-
-      const currentUrl = this._page.url();
-      if (currentUrl.includes('login')) return false;
-
-      console.log('Already logged in, skipping login step...');
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  private async login(): Promise<void> {
-    if (!this._page) {
-      throw new Error('Page not initialized, did you call init() first?');
-    }
-
-    console.log('Navigating to login page...');
-    await this._page.goto(LOGIN_URL, { waitUntil: 'networkidle0' });
-
-    await this._page.waitForSelector('input[name="username"]');
-    await this._page.waitForSelector('input[name="password"]');
-    await this._page.type('input[name="username"]', env.MNO_USERNAME);
-    await this._page.type('input[name="password"]', env.MNO_PASSWORD);
-
-    console.log('Submitting login form...');
-    await this._page.click('button[type="button"]');
-
-    try {
-      await this._page.waitForNavigation({ waitUntil: 'networkidle0' });
-      await this.saveLocalStorage();
-      console.log('Successfully logged in!');
-    } catch (error) {
-      console.error('Login failed or timed out:', error);
-      throw new Error('Login failed - check credentials or network connection');
-    }
   }
 }

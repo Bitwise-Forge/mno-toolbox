@@ -48,7 +48,8 @@ Current reports:
 
 ## How it works
 
-- **Puppeteer** handles authentication and navigation (session data persisted under `.session/`).
+- **Puppeteer** launches a single shared browser with a persistent profile under `.session/chrome-profile`.
+- A single login happens once per run (guarded by a shared promise); each processor gets its own tab (Page) in parallel.
 - **Cheerio** parses HTML tables into typed objects.
 - **TypeScript** interfaces ensure consistent output shapes.
 - Each report has a dedicated processor; generators render the final report text.
@@ -71,35 +72,36 @@ Current reports:
 pnpm install
 ```
 
-2. Copy the example environment file and fill in your values:
+2. Copy the example environment file and fill in your values (recommended):
 
 ```bash
 cp .env.example .env
 # then edit .env
 ```
 
-3. _(If you prefer to create it manually)_ Create a `.env` file in the project root with:
+Or create a `.env` file in the project root with:
 
 ```bash
-MNO_BASE_URL=https://example.mnoapp.com
-MNO_LOGIN_PATH=auth/login
-MNO_DASHBOARD_PATH=dashboard
-MNO_SM_REPORT_PATH=reports/social-media
-MNO_SESSION_REPORT_PATH=reports/sessions
-MNO_EVENT_REPORT_PATH=reports/events
-MNO_WEEKLY_CHECKLIST_PATH=reports/weekly-checklist
+# General
+NODE_ENV=development
+REPORT_START_DATE=yyyy/mm/dd
+REPORT_END_DATE=yyyy/mm/dd
 
+# Puppeteer
+PUPPETEER_HEADLESS_MODE=false
+
+# MNO Web App Credentials
 MNO_USERNAME=you@example.com
 MNO_PASSWORD=yourpassword
 
-# Recommended: true for stability in headless environments
-PUPPETEER_HEADLESS_MODE=true
-
-# Weekly checklist date range (any dayjs-parseable format; prefer YYYY-MM-DD)
-REPORT_START_DATE=2025-01-01
-REPORT_END_DATE=2025-01-07
-
-NODE_ENV=development
+# MNO Web App Routes
+MNO_BASE_URL=https://example.mnoapp.com
+MNO_DASHBOARD_PATH=dashboard
+MNO_EVENT_REPORT_PATH=reports/events
+MNO_LOGIN_PATH=auth/login
+MNO_SESSION_REPORT_PATH=reports/sessions
+MNO_SM_REPORT_PATH=reports/social-media
+MNO_WEEKLY_CHECKLIST_PATH=reports/weekly-checklist
 ```
 
 ---
@@ -122,8 +124,9 @@ pnpm gen-checklist-report
 
 ## Operational notes
 
-- Sessions are cached locally in `.session/localStorage.json` to avoid repeated logins.
-- The tool waits for pages to reach network idle before scraping for more stable results.
+- A single Chromium instance is launched per run and shared across processors; session persists in `.session/chrome-profile/`.
+- Processors run in parallel using separate tabs; login occurs once and is reused.
+- The tool waits for pages to reach network idle before scraping for stability.
 - Keep runs reasonable to avoid hammering the MNO site; prefer `PUPPETEER_HEADLESS_MODE=true`.
 
 ---
@@ -132,7 +135,7 @@ pnpm gen-checklist-report
 
 - **Login failed or timed out**
   - Verify `.env` credentials and all URLs/paths
-  - Delete `.session/localStorage.json` to reset the browser session
+  - Remove the `.session/chrome-profile/` directory to reset the browser session
 - **Report table not found**
   - The MNO page structure may have changed; update selectors in the corresponding processor
 - **Date input issues (weekly checklist)**
@@ -142,7 +145,7 @@ pnpm gen-checklist-report
 
 ## Project structure (high level)
 
-- `src/lib/Scraper.ts` — Browser/session management and auth
+- `src/lib/Scraper.ts` — Shared browser/session management and auth (persistent profile, single-login)
 - `src/lib/processors/MemberDataProcessor.ts` — Social media/member activity parsing
 - `src/lib/processors/SessionDataProcessor.ts` — Session report parsing
 - `src/lib/processors/EventDataProcessor.ts` — Events report parsing

@@ -4,6 +4,7 @@ import type { Page } from 'puppeteer';
 import { load } from 'cheerio';
 
 import type { ChapterPerformanceReport, SessionActivity } from '@/interfaces';
+import type { ScraperScope } from '@/lib/Scraper';
 import { Scraper } from '@/lib/Scraper';
 import env from '@/utils/env';
 
@@ -13,17 +14,18 @@ const SESSION_REPORT_URL = `${env.MNO_BASE_URL}/${env.MNO_SESSION_REPORT_PATH}`;
 
 export default class SessionDataParser {
   private _scraper: Scraper;
+  private _scope: ScraperScope = 'sessions';
   private _page: Page | null;
   private _sessionReportHtml: Cheerio<Element> | null;
-  private _sessionReportJson: SessionActivity[];
+  private _sessionReportData: SessionActivity[];
   private _validSessions: SessionActivity[];
   private _counts: SessionCounts;
 
   constructor() {
-    this._scraper = new Scraper('session');
+    this._scraper = new Scraper(this._scope);
     this._page = null;
     this._sessionReportHtml = null;
-    this._sessionReportJson = [];
+    this._sessionReportData = [];
     this._validSessions = [];
     this._counts = { activity: 0, coaching: 0, superGroups: 0, visitor: 0, mno: 0, quick: 0, unknown: 0 };
   }
@@ -61,7 +63,7 @@ export default class SessionDataParser {
       console.error('Error navigating to Session Report page:', error);
       throw error;
     } finally {
-      await this._scraper.close();
+      await this._scraper.close(this._scope);
     }
   }
 
@@ -91,14 +93,14 @@ export default class SessionDataParser {
 
       const sessionActivity: SessionActivity = { submittedBy, submittedByName, sessionWith, type };
 
-      this._sessionReportJson.push(sessionActivity);
+      this._sessionReportData.push(sessionActivity);
     });
 
-    console.log(`Successfully parsed ${this._sessionReportJson.length} sessions from table`);
+    console.log(`Successfully parsed ${this._sessionReportData.length} sessions from table`);
   }
 
   private validSessions(): void {
-    const validSessions = this._sessionReportJson.filter(({ sessionWith, submittedBy, type }) => {
+    const validSessions = this._sessionReportData.filter(({ sessionWith, submittedBy, type }) => {
       const isLeadershipSession = type.toLowerCase().startsWith('leadership');
       const isWithExecutiveProducer = sessionWith.toLowerCase().startsWith('executive producer');
       const isVisitorSession = type.toLowerCase().startsWith('visitor');
