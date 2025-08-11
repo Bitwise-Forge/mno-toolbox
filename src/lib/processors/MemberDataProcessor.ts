@@ -7,7 +7,7 @@ import type { ChapterPerformanceReport, MemberActivity } from '@/interfaces';
 import type { ScraperScope } from '@/lib/Scraper';
 import { Scraper } from '@/lib/Scraper';
 import env from '@/utils/env';
-import { roundToTwoDecimalPlaces } from '@/utils/numberUtils';
+import { roundTo } from '@/utils/numberUtils';
 
 const SM_REPORT_URL = `${env.MNO_BASE_URL}/${env.MNO_SM_REPORT_PATH}`;
 
@@ -132,12 +132,12 @@ export default class MemberDataParser {
   }
 
   private get avgPostsPerMember(): number {
-    return roundToTwoDecimalPlaces(this.totalPosts / this.totalMembers);
+    return roundTo(this.totalPosts / this.totalMembers);
   }
 
   private get avgRoundsOfPosts(): { raw: number; rounded: number } {
     return {
-      raw: roundToTwoDecimalPlaces(this.avgPostsPerMember / this.totalMembers),
+      raw: roundTo(this.avgPostsPerMember / this.totalMembers),
       rounded: Math.floor(this.avgPostsPerMember / this.totalMembers),
     };
   }
