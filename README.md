@@ -3,6 +3,7 @@
 ![Node](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=Node&query=%24.engines.node&logo=node.js&logoColor=white&color=339933&cacheSeconds=300)
 ![pnpm](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=pnpm&query=%24.packageManager&logo=pnpm&logoColor=white&color=ffd34e&cacheSeconds=300)
 ![TypeScript](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FBitwise-Forge%2Fmno-toolbox%2Frefs%2Fheads%2Fmain%2Fpackage.json&label=TypeScript&query=%24.devDependencies.typescript&logo=typescript&logoColor=white&color=3178C6&cacheSeconds=300)
+![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 
 ## Overview
 
@@ -22,6 +23,8 @@ This toolkit automates the chapter performance chair reports that get sent out a
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
 - [Running reports](#running-reports)
+- [Testing](#testing)
+- [Code Quality](#code-quality)
 - [Operational notes](#operational-notes)
 - [Troubleshooting](#troubleshooting)
 - [Project structure (high level)](#project-structure-high-level)
@@ -100,6 +103,57 @@ pnpm gen-checklist-report
 
 ---
 
+## Testing
+
+This project includes comprehensive testing with [**Vitest**](https://vitest.dev/):
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Run tests in watch mode (development)
+pnpm test:watch
+```
+
+---
+
+## Code Quality
+
+This project maintains high code quality through automated tools:
+
+### **ESLint + Prettier**
+
+- **ESLint v9** with flat config for modern JavaScript/TypeScript
+- **Prettier** for consistent code formatting
+- **Import sorting** and destructuring rules
+- **TypeScript-specific** linting rules
+
+### **Husky Git Hooks**
+
+- **Pre-commit hooks** automatically run formatting and linting
+  - **Ensures code quality** before commits
+  - **Consistent code style** across the project
+- **Pre-push hook** runs tests
+  - **Ensures tests pass** before pushing
+
+### **Available Scripts**
+
+```bash
+# Format code
+pnpm format
+
+# Lint and auto-fix
+pnpm lint
+
+# Clean dependencies and session data
+pnpm clean
+```
+
+---
+
 ## Operational notes
 
 - A single Chromium instance is launched per run and shared across processors; session persists in `.session/chrome-profile/`.
@@ -128,6 +182,8 @@ pnpm gen-checklist-report
 - `src/lib/Scraper.ts` — Shared browser/session/auth management
 - `src/lib/processors/*.ts` — Report processors for each report type
 - `src/lib/reportGenerators/*.ts` — Report generators for each report type (text output)
+- `src/utils/` — Utility functions (number formatting, string processing, etc.)
+- `tests/` — Comprehensive test suite
 
 ---
 
@@ -145,6 +201,8 @@ pnpm gen-checklist-report
   }
 }
 ```
+
+4. **Add tests** for your new functionality in the `tests/` directory
 
 ---
 
