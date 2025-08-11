@@ -23,6 +23,6 @@
     "noImplicitAny": false,
     "noImplicitOverride": true
   },
-  "include": ["src", "tests", "*.js", "vitest.config.ts"],
+  "include": ["src", "tests", "*.js", "vitest.config.ts", ".husky/install.js"],
   "exclude": ["node_modules"]
 }

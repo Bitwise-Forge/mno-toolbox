@@ -10,6 +10,7 @@
     "gen-chapter-report": "tsx --env-file=./.env -r dotenv/config src/index.ts chapter",
     "gen-checklist-report": "tsx --env-file=./.env -r dotenv/config src/index.ts checklist",
     "lint": "eslint . --fix --cache --cache-location node_modules/.cache/.eslintcache",
+    "prepare": "node .husky/install.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest"
