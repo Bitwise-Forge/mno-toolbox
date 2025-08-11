@@ -3,6 +3,7 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "streetsidesoftware.code-spell-checker",
+    "vitest.explorer",
     "yoavbls.pretty-ts-errors"
   ]
 }

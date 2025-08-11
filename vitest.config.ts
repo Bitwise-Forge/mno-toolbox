@@ -1,0 +1,19 @@
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  cacheDir: 'node_modules/.cache/.vitestcache',
+  plugins: [tsconfigPaths()],
+  test: {
+    coverage: {
+      enabled: false,
+      provider: 'v8',
+      reporter: ['text', 'html'],
+    },
+    environment: 'node',
+    exclude: ['node_modules', 'coverage'],
+    globals: false,
+    include: ['tests/**/*.test.ts'],
+    isolate: true,
+  },
+});
