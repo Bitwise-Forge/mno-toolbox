@@ -11,15 +11,17 @@ export default class ChapterReportGenerator {
   }
 
   private get membersSubReport(): string {
-    const { members } = this._reportData;
-    const { lowActivity, totalMembers, zeroActivity } = members;
+    const { lowActivityList, totalMembers, zeroActivityList } = this._reportData.members;
 
-    return [`Total Members: ${totalMembers}`, `Zero Activity: ${zeroActivity}`, `Low Activity: ${lowActivity}`].join('\n');
+    return [
+      `Total Members: ${totalMembers}`,
+      `Zero Activity: ${zeroActivityList.length}`,
+      `Low Activity: ${lowActivityList.length}`,
+    ].join('\n');
   }
 
   private get socialMediaSubReport(): string {
-    const { socialMedia } = this._reportData;
-    const { avgPostsPerMember, avgRoundsOfPosts, totalPosts } = socialMedia;
+    const { avgPostsPerMember, avgRoundsOfPosts, totalPosts } = this._reportData.socialMedia;
 
     return [
       `Total Posts: ${totalPosts}`,
@@ -29,8 +31,7 @@ export default class ChapterReportGenerator {
   }
 
   private get sessionsSubReport(): string {
-    const { sessions } = this._reportData;
-    const { activity, coaching, mno, quick, superGroups, total, unknown, visitor } = sessions;
+    const { activity, coaching, mno, quick, superGroups, total, unknown, visitor } = this._reportData.sessions;
 
     const sessionTypeSubReport = [
       { type: 'Activity', count: activity },
@@ -38,8 +39,8 @@ export default class ChapterReportGenerator {
       { type: 'MNO', count: mno },
       { type: 'Quick', count: quick },
       { type: 'Supergroups', count: superGroups },
-      { type: 'Visitor', count: visitor },
       { type: 'Unknown', count: unknown },
+      { type: 'Visitor', count: visitor },
     ];
 
     const populatedSessionTypes = sessionTypeSubReport.filter(({ count }) => count > 0).map(({ count, type }) => `${type}: ${count}`);
@@ -48,28 +49,25 @@ export default class ChapterReportGenerator {
   }
 
   private get eventsSubReport(): string {
-    const { events } = this._reportData;
-    const { listeningViewing, mixer, openMic, other, promoParty, seminar, show, total, training } = events;
+    const { listeningViewing, mixer, openMic, other, promoParty, seminar, show, total, training } = this._reportData.events;
 
     const eventTypeSubReport = [
-      { type: 'Training', count: training },
-      { type: 'Seminar', count: seminar },
-      { type: 'Mixer', count: mixer },
-      { type: 'Show', count: show },
-      { type: 'Open Mic', count: openMic },
-      { type: 'Promo Party', count: promoParty },
-      { type: 'Other', count: other },
       { type: 'Listening/Viewing', count: listeningViewing },
+      { type: 'Mixer', count: mixer },
+      { type: 'Open Mic', count: openMic },
+      { type: 'Other', count: other },
+      { type: 'Promo Party', count: promoParty },
+      { type: 'Seminar', count: seminar },
+      { type: 'Show', count: show },
+      { type: 'Training', count: training },
     ];
 
     const populatedEventTypes = eventTypeSubReport.filter(({ count }) => count > 0).map(({ count, type }) => `${type}: ${count}`);
-
     return [`Total Events: ${total}`, ...populatedEventTypes].join('\n');
   }
 
   private get referralsAndBusinessBucksSubReport(): string {
-    const { referralsAndBusinessBucks } = this._reportData;
-    const { businessBucks, referrals } = referralsAndBusinessBucks;
+    const { businessBucks, referrals } = this._reportData.referralsAndBusinessBucks;
 
     return [`Referrals: ${referrals}`, `Business Bucks: ${businessBucks}`].join('\n');
   }
@@ -106,16 +104,19 @@ export default class ChapterReportGenerator {
   }
 
   get unblindedReport() {
-    const { events, members, sessions } = this._reportData;
+    const { events, members, referralsAndBusinessBucks, sessions } = this._reportData;
     const { lowActivityList, zeroActivityList } = members;
     const { submittedBy: sessionSubmittedBy } = sessions;
     const { submittedBy: eventsSubmittedBy } = events;
+    const { businessBucksReceivers, referrers } = referralsAndBusinessBucks;
 
     const membersList = members.membersList.length ? members.membersList.join(', ') : 'None';
     const zeroActivityMembers = zeroActivityList.length ? zeroActivityList.join(', ') : 'None';
     const lowActivityMembers = lowActivityList.length ? lowActivityList.join(', ') : 'None';
     const sessionSubmitters = sessionSubmittedBy.length ? sessionSubmittedBy.join(', ') : 'None';
     const eventAttendees = eventsSubmittedBy.length ? eventsSubmittedBy.join(', ') : 'None';
+    const referralsList = referrers.length ? referrers.join(', ') : 'None';
+    const businessBucksList = businessBucksReceivers.length ? businessBucksReceivers.join(', ') : 'None';
 
     const lines = [
       '\n',
@@ -142,6 +143,14 @@ export default class ChapterReportGenerator {
       '\n',
       'Event Attendees:\n',
       eventAttendees,
+      '\n',
+      '\n',
+      'Referrals:\n',
+      referralsList,
+      '\n',
+      '\n',
+      'Business Bucks:\n',
+      businessBucksList,
     ];
 
     return dedent`${lines.join('')}`;

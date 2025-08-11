@@ -27,7 +27,7 @@ export default class SessionDataParser {
     this._sessionReportHtml = null;
     this._sessionReportData = [];
     this._validSessions = [];
-    this._counts = { activity: 0, coaching: 0, superGroups: 0, visitor: 0, mno: 0, quick: 0, unknown: 0 };
+    this._counts = { activity: 0, coaching: 0, mno: 0, quick: 0, superGroups: 0, unknown: 0, visitor: 0 };
   }
 
   async init(): Promise<void> {
@@ -118,41 +118,21 @@ export default class SessionDataParser {
   }
 
   private countSessionTypes(): void {
-    this._counts = {
-      activity: 0,
-      coaching: 0,
-      superGroups: 0,
-      visitor: 0,
-      mno: 0,
-      quick: 0,
-      unknown: 0,
-    };
-
     this._validSessions.forEach(({ type }) => {
       this._counts[type.toLowerCase().split(' ')[0]]++;
     });
   }
 
   private get membersSubmitted(): Set<string> {
-    return new Set(this._validSessions.map(({ submittedByName }) => submittedByName));
+    return new Set(
+      this._validSessions
+        .map(({ submittedByName }) => submittedByName)
+        .toSorted((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())),
+    );
   }
 
   get sessionReportData(): ChapterPerformanceReport['sessions'] {
-    const { activity, coaching, mno, quick, superGroups, unknown, visitor } = this._counts;
     const total = this._validSessions.length;
-    const membersSubmitted = this.membersSubmitted;
-
-    return {
-      total,
-      activity,
-      coaching,
-      superGroups,
-      visitor,
-      mno,
-      quick,
-      unknown,
-      membersSubmitted: membersSubmitted.size,
-      submittedBy: Array.from(membersSubmitted),
-    };
+    return { total, ...this._counts, submittedBy: Array.from(this.membersSubmitted) };
   }
 }

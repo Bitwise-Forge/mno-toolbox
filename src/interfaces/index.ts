@@ -1,8 +1,6 @@
 export type ChapterPerformanceReport = {
   members: {
     totalMembers: number;
-    zeroActivity: number;
-    lowActivity: number;
     membersList: string[];
     zeroActivityList: string[];
     lowActivityList: string[];
@@ -24,7 +22,6 @@ export type ChapterPerformanceReport = {
     mno: number;
     quick: number;
     unknown: number;
-    membersSubmitted: number;
     submittedBy: string[];
   };
   events: {
@@ -37,12 +34,13 @@ export type ChapterPerformanceReport = {
     promoParty: number;
     other: number;
     listeningViewing: number;
-    membersSubmitted: number;
     submittedBy: string[];
   };
   referralsAndBusinessBucks: {
     referrals: number;
     businessBucks: number;
+    referrers: string[];
+    businessBucksReceivers: string[];
   };
 };
 
@@ -74,10 +72,10 @@ export type SessionActivity = {
 };
 
 export type WeeklyChecklistReport = {
-  totalChecklists: number;
+  total: number;
   submittedBy: string[];
-  membersList: string[];
   missingChecklists: string[];
+  membersList: string[];
 };
 
 export type WeeklyChecklist = {

@@ -12,13 +12,13 @@ export default class ChecklistReportGenerator {
   }
 
   private get membersSubReport(): string {
-    const { membersList, missingChecklists, totalChecklists } = this._reportData;
-    const hasChecklistPercentage = getPercentage(totalChecklists, membersList.length);
+    const { membersList, missingChecklists, total } = this._reportData;
+    const hasChecklistPercentage = getPercentage(total, membersList.length);
     const missingChecklistsPercentage = getPercentage(missingChecklists.length, membersList.length);
 
     return [
       `Total Members: ${membersList.length}`,
-      `Weekly Checklists Created: ${totalChecklists} (${hasChecklistPercentage}%)`,
+      `Weekly Checklists Created: ${total} (${hasChecklistPercentage}%)`,
       `Weekly Checklists Missing: ${missingChecklists.length} (${missingChecklistsPercentage}%)`,
     ].join('\n');
   }

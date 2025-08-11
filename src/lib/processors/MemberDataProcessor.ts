@@ -112,7 +112,9 @@ export default class MemberDataParser {
   }
 
   private get uniqueMembersMinusEp(): MemberActivity[] {
-    return Array.from(new Set(this._memberReportData.filter(({ name }) => !name.toLowerCase().startsWith('executive'))));
+    return Array.from(new Set(this._memberReportData.filter(({ name }) => !name.toLowerCase().startsWith('executive')))).toSorted(
+      (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+    );
   }
 
   private get totalMembers(): number {
@@ -142,20 +144,24 @@ export default class MemberDataParser {
     };
   }
 
-  private get totalReferrals(): number {
-    return this._memberReportData.reduce((acc, member) => acc + member.referrals, 0);
+  private get referrers(): MemberActivity[] {
+    return this._memberReportData
+      .filter(({ referrals }) => referrals > 0)
+      .toSorted((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
   }
 
-  private get totalBusinessBucks(): number {
-    return this._memberReportData.reduce((acc, member) => acc + member.businessBucks, 0);
+  private get businessBucksReceivers(): MemberActivity[] {
+    return this._memberReportData
+      .filter(({ businessBucks }) => businessBucks > 0)
+      .toSorted((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
   }
 
   get memberReportData(): ChapterPerformanceReport['members'] {
+    const membersList = this.uniqueMembersMinusEp.map(({ name }) => name);
+
     return {
       totalMembers: this.totalMembers,
-      zeroActivity: this.zeroActivityList.size,
-      lowActivity: this.lowActivityList.size,
-      membersList: this.uniqueMembersMinusEp.map(({ name }) => name),
+      membersList,
       zeroActivityList: Array.from(this.zeroActivityList),
       lowActivityList: Array.from(this.lowActivityList),
     };
@@ -170,9 +176,11 @@ export default class MemberDataParser {
   }
 
   get referralsAndBusinessBucksData(): ChapterPerformanceReport['referralsAndBusinessBucks'] {
-    return {
-      referrals: this.totalReferrals,
-      businessBucks: this.totalBusinessBucks,
-    };
+    const referrals = this.referrers.reduce((acc, { referrals }) => acc + referrals, 0);
+    const businessBucks = this.businessBucksReceivers.reduce((acc, { businessBucks }) => acc + businessBucks, 0);
+    const referrers = this.referrers.map(({ name }) => name);
+    const businessBucksReceivers = this.businessBucksReceivers.map(({ name }) => name);
+
+    return { referrals, businessBucks, referrers, businessBucksReceivers };
   }
 }

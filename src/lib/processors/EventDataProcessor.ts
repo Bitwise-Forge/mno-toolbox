@@ -27,7 +27,7 @@ export default class EventDataParser {
     this._eventReportHtml = null;
     this._eventReportData = [];
     this._validEvents = [];
-    this._counts = { training: 0, seminar: 0, mixer: 0, show: 0, openMic: 0, promoParty: 0, other: 0, listeningViewing: 0 };
+    this._counts = { listeningViewing: 0, mixer: 0, openMic: 0, other: 0, promoParty: 0, seminar: 0, show: 0, training: 0 };
   }
 
   async init(): Promise<void> {
@@ -108,28 +108,25 @@ export default class EventDataParser {
     console.log(`Successfully identified ${this._validEvents.length} valid events`);
   }
 
-  private static eventTypeMap: Record<keyof EventCounts, string> = {
-    training: 'training',
-    seminar: 'seminar',
+  private static typeMap: Record<keyof EventCounts, string> = {
+    listeningViewing: 'listening/viewing',
     mixer: 'mixer',
-    show: 'show',
     openMic: 'open mic',
-    promoParty: 'promo party',
     other: 'other',
-    listeningViewing: 'Listening/Viewing',
+    promoParty: 'promo party',
+    seminar: 'seminar',
+    show: 'show',
+    training: 'training',
   };
 
   private countEventTypes(): void {
-    this._counts = { training: 0, seminar: 0, mixer: 0, show: 0, openMic: 0, promoParty: 0, other: 0, listeningViewing: 0 };
-
     this._validEvents.forEach(({ eventType }) => {
-      const eventTypeKey = Object.keys(EventDataParser.eventTypeMap).find(
-        key => EventDataParser.eventTypeMap[key as keyof EventCounts] === eventType,
-      );
+      let formattedEventType = eventType.toLowerCase() as keyof EventCounts;
+      const eventTypeKey = Object.keys(EventDataParser.typeMap).find(key => EventDataParser.typeMap[key] === formattedEventType);
 
       if (!eventTypeKey) {
         console.log(`Unknown event type: ${eventType}`);
-        return;
+        formattedEventType = 'other';
       }
 
       this._counts[eventTypeKey as keyof EventCounts]++;
@@ -137,26 +134,15 @@ export default class EventDataParser {
   }
 
   private get membersSubmitted(): Set<string> {
-    return new Set(this._validEvents.map(({ attendingMemberName }) => attendingMemberName));
+    return new Set(
+      this._validEvents
+        .map(({ attendingMemberName }) => attendingMemberName)
+        .toSorted((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())),
+    );
   }
 
   get eventReportData(): ChapterPerformanceReport['events'] {
-    const { listeningViewing, mixer, openMic, other, promoParty, seminar, show, training } = this._counts;
     const total = this._validEvents.length;
-    const membersSubmitted = this.membersSubmitted;
-
-    return {
-      total,
-      training,
-      seminar,
-      mixer,
-      show,
-      openMic,
-      promoParty,
-      other,
-      listeningViewing,
-      membersSubmitted: membersSubmitted.size,
-      submittedBy: Array.from(membersSubmitted),
-    };
+    return { total, ...this._counts, submittedBy: Array.from(this.membersSubmitted) };
   }
 }

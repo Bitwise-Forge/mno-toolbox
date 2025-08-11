@@ -102,15 +102,20 @@ export default class WeeklyChecklistProcessor {
     console.log(`Successfully parsed ${this._weeklyChecklistJson.length} checklists from table`);
   }
 
-  private get submittedBy(): string[] {
-    return Array.from(new Set(this._weeklyChecklistJson.map(({ memberName }) => memberName)));
+  private get submittedBy(): Set<string> {
+    return new Set(
+      this._weeklyChecklistJson.map(({ memberName }) => memberName).toSorted((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())),
+    );
+  }
+
+  private get missingChecklists(): string[] {
+    return this._memberReportData.membersList.filter(member => !this.submittedBy.has(member));
   }
 
   get weeklyChecklistReport(): WeeklyChecklistReport {
+    const total = this._weeklyChecklistJson.length;
     const membersList = this._memberReportData.membersList;
-    const totalChecklists = this._weeklyChecklistJson.length;
-    const missingChecklists = membersList.filter(member => !this.submittedBy.includes(member));
 
-    return { membersList, totalChecklists, submittedBy: this.submittedBy, missingChecklists };
+    return { total, submittedBy: Array.from(this.submittedBy), missingChecklists: this.missingChecklists, membersList };
   }
 }
