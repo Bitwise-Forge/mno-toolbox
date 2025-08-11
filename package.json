@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "clean": "rm -rf node_modules",
+    "clean": "rm -rf node_modules .session/chrome-profile/",
     "format": "prettier . --write  --cache --cache-location node_modules/.cache/.prettiercache",
     "gen-chapter-report": "tsx --env-file=./.env -r dotenv/config src/index.ts chapter",
     "gen-checklist-report": "tsx --env-file=./.env -r dotenv/config src/index.ts checklist",

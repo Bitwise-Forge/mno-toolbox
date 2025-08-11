@@ -42,13 +42,17 @@ export default class WeeklyChecklistProcessor {
 
     console.log('Navigating to Weekly Checklist page...');
 
-    const startDate = dayjs(env.REPORT_START_DATE).format('MM/DD/YYYY');
-    const endDate = dayjs(env.REPORT_END_DATE).format('MM/DD/YYYY');
+    const startDate = dayjs(env.REPORT_START_DATE);
+    const endDate = dayjs(env.REPORT_END_DATE);
+
+    if (!startDate.isValid() || !endDate.isValid()) {
+      throw new Error('Invalid start or end date');
+    }
 
     try {
       await this._page.goto(WEEKLY_CHECKLIST_URL, { waitUntil: 'networkidle0' });
       await this._page.waitForSelector('input[name="date"]');
-      await this._page.type('input[name="date"]', `${startDate} - ${endDate}`);
+      await this._page.type('input[name="date"]', `${startDate.format('MM/DD/YYYY')} - ${endDate.format('MM/DD/YYYY')}`);
       await this._page.keyboard.press('Enter');
       await this._page.waitForNetworkIdle();
 

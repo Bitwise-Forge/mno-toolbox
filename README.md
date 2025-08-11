@@ -8,7 +8,7 @@
 
 MNO (Music Network One) is a referral-focused networking organization made up of business professionals and musicians. Members meet weekly — via Zoom or in person — to pass referrals, stay visible, and support one another by “Playing It Forward”. This philosophy means promoting others without expecting anything in return, primarily through online visibility and real-world referrals.
 
-MNO members are expected to remain top-of-mind by showing up weekly in meetings and posting three times per week on social media. These posts are distributed through the MNO Member App and published to Facebook.
+MNO members are expected to remain top-of-mind by showing up weekly in meetings and posting three times per week on social media. These posts are distributed through the MNO Member App and published to whichever social media platforms the member has specified in their Feature Link (FL) preferences.
 
 This toolkit automates the chapter performance chair reports that get sent out at various times throughout the week.
 
@@ -53,10 +53,9 @@ Current reports:
 ## How it works
 
 - **Puppeteer** launches a single shared browser with a persistent profile under `.session/chrome-profile`.
-- A single login happens once per run (guarded by a shared promise); each processor gets its own tab (Page) in parallel.
+  - A single login happens once per run (guarded by a shared promise); each processor gets its own tab (Page) in parallel.
 - **Cheerio** parses HTML tables into typed objects.
-- **TypeScript** interfaces ensure consistent output shapes.
-- Each report has a dedicated processor; generators render the final report text.
+- Each report has a dedicated processor; generators render the final report text to stdout.
 
 ---
 
@@ -81,31 +80,6 @@ pnpm install
 ```bash
 cp .env.example .env
 # then edit .env
-```
-
-Or create a `.env` file in the project root with:
-
-```bash
-# General
-NODE_ENV=development
-REPORT_START_DATE=yyyy/mm/dd
-REPORT_END_DATE=yyyy/mm/dd
-
-# Puppeteer
-PUPPETEER_HEADLESS_MODE=true
-
-# MNO Web App Credentials
-MNO_USERNAME=you@example.com
-MNO_PASSWORD=yourpassword
-
-# MNO Web App Routes
-MNO_BASE_URL=https://example.mnoapp.com
-MNO_DASHBOARD_PATH=dashboard
-MNO_EVENT_REPORT_PATH=reports/events
-MNO_LOGIN_PATH=auth/login
-MNO_SESSION_REPORT_PATH=reports/sessions
-MNO_SM_REPORT_PATH=reports/social-media
-MNO_WEEKLY_CHECKLIST_PATH=reports/weekly-checklist
 ```
 
 ---
@@ -149,15 +123,11 @@ pnpm gen-checklist-report
 
 ## Project structure (high level)
 
-- `src/lib/Scraper.ts` — Shared browser/session management and auth (persistent profile, single-login)
-- `src/lib/processors/MemberDataProcessor.ts` — Social media/member activity parsing
-- `src/lib/processors/SessionDataProcessor.ts` — Session report parsing
-- `src/lib/processors/EventDataProcessor.ts` — Events report parsing
-- `src/lib/processors/WeeklyChecklistProcessor.ts` — Weekly checklist scraping/parsing
-- `src/lib/reportGenerators/ChapterReportGenerator.ts` — Chapter performance text output
-- `src/lib/reportGenerators/ChecklistReportGenerator.ts` — Weekly checklist text output
 - `src/index.ts` — CLI entrypoint and report routing
 - `src/interfaces/` — Strongly-typed data contracts
+- `src/lib/Scraper.ts` — Shared browser/session/auth management
+- `src/lib/processors/*.ts` — Report processors for each report type
+- `src/lib/reportGenerators/*.ts` — Report generators for each report type (text output)
 
 ---
 
@@ -165,13 +135,13 @@ pnpm gen-checklist-report
 
 1. Add a processor under `src/lib/processors/YourNewProcessor.ts` using the established pattern:
    - `init()` → `parse()` → optional validate/aggregate → typed getter
-2. (Optional) Add a report generator in `src/lib/reportGenerators/YourReportGenerator.ts`.
+2. Add a report generator in `src/lib/reportGenerators/YourReportGenerator.ts`.
 3. Wire it up in `src/index.ts` and add a script in `package.json`:
 
 ```json
 {
   "scripts": {
-    "gen-new-report": "tsx --env-file=./.env -r dotenv/config src/index.ts new"
+    "gen-new-report": "tsx --env-file=./.env -r dotenv/config src/index.ts yourReportType"
   }
 }
 ```

@@ -1,6 +1,9 @@
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
 
+const stringToBooleanSchema = z.string().transform(val => val === 'true');
+const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+
 export default createEnv({
   emptyStringAsUndefined: true,
   server: {
@@ -14,12 +17,9 @@ export default createEnv({
     MNO_USERNAME: z.email(),
     MNO_WEEKLY_CHECKLIST_PATH: z.string().min(1),
     NODE_ENV: z.enum(['development', 'production']).default('development'),
-    PUPPETEER_HEADLESS_MODE: z
-      .string()
-      .transform(val => val === 'true')
-      .default(false),
-    REPORT_START_DATE: z.string().min(1),
-    REPORT_END_DATE: z.string().min(1),
+    PUPPETEER_HEADLESS_MODE: stringToBooleanSchema,
+    REPORT_START_DATE: dateSchema,
+    REPORT_END_DATE: dateSchema,
   },
   runtimeEnv: process.env,
 });
