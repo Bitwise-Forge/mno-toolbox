@@ -107,14 +107,14 @@ describe('stringUtils', () => {
         First line
 
         Third line
-      `).toBe('First line\n  \nThird line\n');
+      `).toBe('First line\n\nThird line\n');
 
       expect(dedent`
         Content
 
 
         More content
-      `).toBe('Content\n  \n  \nMore content\n');
+      `).toBe('Content\n\n\nMore content\n');
     });
 
     it('should handle completely empty lines in the middle', () => {
