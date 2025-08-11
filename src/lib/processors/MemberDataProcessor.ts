@@ -138,7 +138,7 @@ export default class MemberDataParser {
   private get avgRoundsOfPosts(): { raw: number; rounded: number } {
     return {
       raw: roundTo(this.avgPostsPerMember / this.totalMembers),
-      rounded: Math.floor(this.avgPostsPerMember / this.totalMembers),
+      rounded: roundTo(this.avgPostsPerMember / this.totalMembers, 0),
     };
   }
 
