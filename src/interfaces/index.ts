@@ -75,9 +75,9 @@ export type SessionActivity = {
 
 export type WeeklyChecklistReport = {
   totalChecklists: number;
-  checklistPercentage: number;
   submittedBy: string[];
   membersList: string[];
+  missingChecklists: string[];
 };
 
 export type WeeklyChecklist = {

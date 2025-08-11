@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 
 import type { WeeklyChecklistReport } from '@/interfaces';
+import { getPercentage } from '@/utils/numberUtils';
 import { dedent } from '@/utils/stringUtils';
 
 export default class ChecklistReportGenerator {
@@ -11,13 +12,14 @@ export default class ChecklistReportGenerator {
   }
 
   private get membersSubReport(): string {
-    const { checklistPercentage, membersList, totalChecklists } = this._reportData;
-    const missingChecklistPercentage = 100 - checklistPercentage;
+    const { membersList, missingChecklists, totalChecklists } = this._reportData;
+    const hasChecklistPercentage = getPercentage(totalChecklists, membersList.length);
+    const missingChecklistsPercentage = getPercentage(missingChecklists.length, membersList.length);
 
     return [
       `Total Members: ${membersList.length}`,
-      `Weekly Checklists Created: ${totalChecklists} (${checklistPercentage}%)`,
-      `Weekly Checklists Missing: ${membersList.length - totalChecklists} (${missingChecklistPercentage}%)`,
+      `Weekly Checklists Created: ${totalChecklists} (${hasChecklistPercentage}%)`,
+      `Weekly Checklists Missing: ${missingChecklists.length} (${missingChecklistsPercentage}%)`,
     ].join('\n');
   }
 
@@ -37,12 +39,11 @@ export default class ChecklistReportGenerator {
   }
 
   get unblindedReport() {
-    const { membersList, submittedBy } = this._reportData;
+    const { membersList, missingChecklists, submittedBy } = this._reportData;
 
     const members = membersList.length ? membersList.join(', ') : 'None';
     const checklistSubmitters = submittedBy.length ? submittedBy.join(', ') : 'None';
-    const missingChecklistsArr = membersList.filter(member => !submittedBy.includes(member));
-    const missingChecklists = missingChecklistsArr.length ? missingChecklistsArr.join(', ') : 'None';
+    const missingChecklistMembers = missingChecklists.length ? missingChecklists.join(', ') : 'None';
 
     const lines = [
       '\n',
@@ -60,7 +61,7 @@ export default class ChecklistReportGenerator {
       '\n',
       '\n',
       'Missing Checklists:\n',
-      missingChecklists,
+      missingChecklistMembers,
     ];
 
     return dedent`${lines.join('')}`;

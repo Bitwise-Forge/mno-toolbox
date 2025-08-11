@@ -4,28 +4,25 @@ import type { Page } from 'puppeteer';
 import { load } from 'cheerio';
 import dayjs from 'dayjs';
 
-import type { MemberActivity, WeeklyChecklist, WeeklyChecklistReport } from '@/interfaces';
+import type { ChapterPerformanceReport, WeeklyChecklist, WeeklyChecklistReport } from '@/interfaces';
 import type { ScraperScope } from '@/lib/Scraper';
 import { Scraper } from '@/lib/Scraper';
 import env from '@/utils/env';
 
-const SM_REPORT_URL = `${env.MNO_BASE_URL}/${env.MNO_SM_REPORT_PATH}`;
 const WEEKLY_CHECKLIST_URL = `${env.MNO_BASE_URL}/${env.MNO_WEEKLY_CHECKLIST_PATH}`;
 
 export default class WeeklyChecklistProcessor {
   private _scraper: Scraper;
   private _scope: ScraperScope = 'weekly-checklist';
   private _page: Page | null;
-  private _memberReportHtml: Cheerio<Element> | null;
-  private _memberReportData: Pick<MemberActivity, 'firstName' | 'lastName' | 'name'>[];
+  private _memberReportData: ChapterPerformanceReport['members'];
   private _weeklyChecklistHtml: Cheerio<Element> | null;
   private _weeklyChecklistJson: WeeklyChecklist[];
 
-  constructor() {
+  constructor(memberData: ChapterPerformanceReport['members']) {
     this._scraper = new Scraper(this._scope);
     this._page = null;
-    this._memberReportHtml = null;
-    this._memberReportData = [];
+    this._memberReportData = memberData;
     this._weeklyChecklistHtml = null;
     this._weeklyChecklistJson = [];
   }
@@ -33,36 +30,9 @@ export default class WeeklyChecklistProcessor {
   async init(): Promise<void> {
     await this._scraper.init();
     this._page = this._scraper.page;
-    this._memberReportHtml = await this.getSmReport();
     this._weeklyChecklistHtml = await this.getWeeklyChecklist();
 
-    this.parseMemberReport();
-    this.parseChecklist();
-  }
-
-  private async getSmReport(): Promise<Cheerio<Element>> {
-    if (!this._page) {
-      throw new Error('Page not initialized, did you call init() first?');
-    }
-
-    console.log('Navigating to SM Report page...');
-
-    try {
-      await this._page.goto(SM_REPORT_URL, { waitUntil: 'networkidle0' });
-
-      const $ = load(await this._page.content());
-      const table = $('table');
-
-      if (table.length === 0) {
-        throw new Error('SM Report table not found - page may have changed or access denied');
-      }
-
-      console.log('Successfully extracted table from SM Report page');
-      return table;
-    } catch (error) {
-      console.error('Error navigating to SM Report page:', error);
-      throw error;
-    }
+    this.parse();
   }
 
   private async getWeeklyChecklist(): Promise<Cheerio<Element>> {
@@ -99,39 +69,7 @@ export default class WeeklyChecklistProcessor {
     }
   }
 
-  private parseMemberReport(): void {
-    if (!this._memberReportHtml) {
-      throw new Error('Member report not found. Did you call init()?');
-    }
-
-    const tableHtml = this._memberReportHtml.html();
-
-    if (!tableHtml) {
-      throw new Error('No table HTML content found');
-    }
-
-    const $ = load(`<table>${tableHtml}</table>`);
-    const rows = $('tbody tr');
-
-    rows.each((_, row) => {
-      const cells = $(row).find('td');
-
-      const memberName = cells.eq(0).text().trim();
-
-      const nameParts = memberName.split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
-      const name = `${firstName} ${lastName[0]}.`;
-
-      const memberActivity: Pick<MemberActivity, 'firstName' | 'lastName' | 'name'> = { firstName, lastName, name };
-
-      this._memberReportData.push(memberActivity);
-    });
-
-    console.log(`Successfully parsed ${this._memberReportData.length} members from table`);
-  }
-
-  private parseChecklist(): void {
+  private parse(): void {
     if (!this._weeklyChecklistHtml) {
       throw new Error('Weekly checklist report not found, did you call init() first?');
     }
@@ -160,22 +98,15 @@ export default class WeeklyChecklistProcessor {
     console.log(`Successfully parsed ${this._weeklyChecklistJson.length} checklists from table`);
   }
 
-  private get uniqueMembersMinusEp(): string[] {
-    return Array.from(
-      new Set(this._memberReportData.filter(({ name }) => !name.toLowerCase().startsWith('executive')).map(({ name }) => name)),
-    );
-  }
-
   private get submittedBy(): string[] {
     return Array.from(new Set(this._weeklyChecklistJson.map(({ memberName }) => memberName)));
   }
 
   get weeklyChecklistReport(): WeeklyChecklistReport {
-    return {
-      membersList: this.uniqueMembersMinusEp,
-      totalChecklists: this._weeklyChecklistJson.length,
-      checklistPercentage: Number.parseFloat(((this._weeklyChecklistJson.length / this.uniqueMembersMinusEp.length) * 100).toFixed(2)),
-      submittedBy: this.submittedBy,
-    };
+    const membersList = this._memberReportData.membersList;
+    const totalChecklists = this._weeklyChecklistJson.length;
+    const missingChecklists = membersList.filter(member => !this.submittedBy.includes(member));
+
+    return { membersList, totalChecklists, submittedBy: this.submittedBy, missingChecklists };
   }
 }

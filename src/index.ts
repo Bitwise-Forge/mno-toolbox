@@ -25,7 +25,11 @@ const generateChapterReport = async () => {
 };
 
 const generateChecklistReport = async () => {
-  const weeklyChecklistProcessor = new WeeklyChecklistProcessor();
+  const memberDataProcessor = new MemberDataProcessor();
+  await memberDataProcessor.init();
+  const memberData = memberDataProcessor.memberReportData;
+
+  const weeklyChecklistProcessor = new WeeklyChecklistProcessor(memberData);
   await weeklyChecklistProcessor.init();
 
   const checklistReportGenerator = new ChecklistReportGenerator(weeklyChecklistProcessor.weeklyChecklistReport);
