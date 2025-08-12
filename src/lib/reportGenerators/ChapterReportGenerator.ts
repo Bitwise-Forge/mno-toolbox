@@ -13,11 +13,14 @@ export default class ChapterReportGenerator {
   private get membersSubReport(): string {
     const { lowActivityList, totalMembers, zeroActivityList } = this._reportData.members;
 
-    return [
-      `Total Members: ${totalMembers}`,
-      `Zero Activity: ${zeroActivityList.length}`,
-      `Low Activity: ${lowActivityList.length}`,
-    ].join('\n');
+    const activityLists = [
+      { type: 'Zero Activity', count: zeroActivityList.length },
+      { type: 'Low Activity', count: lowActivityList.length },
+    ]
+      .filter(({ count }) => count > 0)
+      .map(({ count, type }) => `${type}: ${count}`);
+
+    return [`Total Members: ${totalMembers}`, ...activityLists].join('\n');
   }
 
   private get socialMediaSubReport(): string {
@@ -74,7 +77,7 @@ export default class ChapterReportGenerator {
 
   get report() {
     const reportDate = dayjs().format('MM/DD/YYYY hh:mm A');
-    const lines: string[] = [
+    const lines = [
       '\n',
       '\n',
       '--------------------------------',
