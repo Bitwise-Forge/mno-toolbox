@@ -18,8 +18,8 @@ export default class ChecklistReportGenerator {
 
     return [
       `Total Members: ${membersList.length}`,
-      `Weekly Checklists Created: ${total} (${hasChecklistPercentage}%)`,
-      `Weekly Checklists Missing: ${missingChecklists.length} (${missingChecklistsPercentage}%)`,
+      ` - Weekly Checklists Created: ${total} (${hasChecklistPercentage}%)`,
+      ` - Weekly Checklists Missing: ${missingChecklists.length} (${missingChecklistsPercentage}%)`,
     ].join('\n');
   }
 
@@ -31,7 +31,9 @@ export default class ChecklistReportGenerator {
       '--------------------------------',
       '\n',
       '\n',
-      `📣 Weekly Checklist Report (as of ${reportDate})\n`,
+      `📣 Weekly Checklist Report (as of ${reportDate})`,
+      '\n',
+      '\n',
       this.membersSubReport,
     ];
 
@@ -51,8 +53,11 @@ export default class ChecklistReportGenerator {
       '--------------------------------',
       '\n',
       '\n',
-      '🔍 Unblinded Data:\n',
-      'Members List:\n',
+      '🔍 Unblinded Data:',
+      '\n',
+      '\n',
+      'Members List:',
+      '\n',
       members,
       '\n',
       '\n',

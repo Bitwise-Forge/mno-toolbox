@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 
 import type { ChapterPerformanceReport } from '@/interfaces';
+import { getPercentage } from '@/utils/numberUtils';
 import { dedent } from '@/utils/stringUtils';
 
 export default class ChapterReportGenerator {
@@ -18,7 +19,7 @@ export default class ChapterReportGenerator {
       { type: 'Low Activity', count: lowActivityList.length },
     ]
       .filter(({ count }) => count > 0)
-      .map(({ count, type }) => `${type}: ${count}`);
+      .map(({ count, type }) => ` - ${type}: ${count} (${getPercentage(count, totalMembers)}%)`);
 
     return [`Total Members: ${totalMembers}`, ...activityLists].join('\n');
   }
@@ -28,8 +29,8 @@ export default class ChapterReportGenerator {
 
     return [
       `Total Posts: ${totalPosts}`,
-      `Avg Posts per Member: ${avgPostsPerMember}`,
-      `Avg Rounds of Posts: ${avgRoundsOfPosts.raw} → ${avgRoundsOfPosts.rounded}`,
+      ` - Avg. Posts per Member: ${avgPostsPerMember}`,
+      ` - Avg. Rounds of Posts: ${avgRoundsOfPosts.raw} → ${avgRoundsOfPosts.rounded}`,
     ].join('\n');
   }
 
@@ -46,7 +47,9 @@ export default class ChapterReportGenerator {
       { type: 'Visitor', count: visitor },
     ];
 
-    const populatedSessionTypes = sessionTypeSubReport.filter(({ count }) => count > 0).map(({ count, type }) => `${type}: ${count}`);
+    const populatedSessionTypes = sessionTypeSubReport
+      .filter(({ count }) => count > 0)
+      .map(({ count, type }) => ` - ${type}: ${count}`);
 
     return [`Total Sessions: ${total}`, ...populatedSessionTypes].join('\n');
   }
@@ -65,7 +68,7 @@ export default class ChapterReportGenerator {
       { type: 'Training', count: training },
     ];
 
-    const populatedEventTypes = eventTypeSubReport.filter(({ count }) => count > 0).map(({ count, type }) => `${type}: ${count}`);
+    const populatedEventTypes = eventTypeSubReport.filter(({ count }) => count > 0).map(({ count, type }) => ` - ${type}: ${count}`);
     return [`Total Events: ${total}`, ...populatedEventTypes].join('\n');
   }
 
@@ -83,23 +86,29 @@ export default class ChapterReportGenerator {
       '--------------------------------',
       '\n',
       '\n',
-      `📣 Weekly Chapter Performance Report (as of ${reportDate})\n`,
+      `📣 Weekly Chapter Performance Report (as of ${reportDate})`,
+      '\n',
+      '\n',
       this.membersSubReport,
       '\n',
       '\n',
-      '💬 Social Media\n',
+      '💬 Social Media',
+      '\n',
       this.socialMediaSubReport,
       '\n',
       '\n',
-      '🤝 Sessions\n',
+      '🤝 Sessions',
+      '\n',
       this.sessionsSubReport,
       '\n',
       '\n',
-      '🎟️  Events\n',
+      '🎟️  Events',
+      '\n',
       this.eventsSubReport,
       '\n',
       '\n',
-      '💰 Referrals + Business Bucks\n',
+      '💰 Referrals + Business Bucks',
+      '\n',
       this.referralsAndBusinessBucksSubReport,
     ];
 
@@ -127,32 +136,41 @@ export default class ChapterReportGenerator {
       '--------------------------------',
       '\n',
       '\n',
-      '🔍 Unblinded Data:\n',
-      'Members List:\n',
+      '🔍 Unblinded Data:',
+      '\n',
+      '\n',
+      'Members List:',
+      '\n',
       membersList,
       '\n',
       '\n',
-      'Zero Activity Members:\n',
+      'Zero Activity Members:',
+      '\n',
       zeroActivityMembers,
       '\n',
       '\n',
-      'Low Activity Members:\n',
+      'Low Activity Members:',
+      '\n',
       lowActivityMembers,
       '\n',
       '\n',
-      'Session Submitters:\n',
+      'Session Submitters:',
+      '\n',
       sessionSubmitters,
       '\n',
       '\n',
-      'Event Attendees:\n',
+      'Event Attendees:',
+      '\n',
       eventAttendees,
       '\n',
       '\n',
-      'Referrals:\n',
+      'Referrals:',
+      '\n',
       referralsList,
       '\n',
       '\n',
-      'Business Bucks:\n',
+      'Business Bucks:',
+      '\n',
       businessBucksList,
     ];
 
