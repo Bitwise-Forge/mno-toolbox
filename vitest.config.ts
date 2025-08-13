@@ -8,7 +8,9 @@ export default defineConfig({
     coverage: {
       enabled: false,
       provider: 'v8',
-      reporter: ['text', 'html'],
+      reporter: ['text'],
+      include: ['src/**/*'],
+      exclude: ['src/interfaces/**/*'],
     },
     environment: 'node',
     exclude: ['node_modules', 'coverage'],

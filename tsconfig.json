@@ -5,7 +5,7 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "lib": ["ESNext"],
-    "paths": { "@/*": ["./src/*"] },
+    "paths": { "@/*": ["./src/*"], "~/*": ["./tests/*"] },
     "moduleDetection": "force",
     "resolveJsonModule": true,
     "skipLibCheck": true,
