@@ -96,6 +96,9 @@ export default class WeeklyChecklistProcessor {
       const [memberFirstName, memberLastName] = member.split(' ');
       const memberName = `${memberFirstName} ${memberLastName[0]}.`;
 
+      const existingChecklist = this._weeklyChecklistJson.some(checklist => checklist.memberName === memberName);
+      if (existingChecklist) return;
+
       this._weeklyChecklistJson.push({ date, member, memberName });
     });
 
