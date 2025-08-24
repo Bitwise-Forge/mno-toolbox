@@ -2,11 +2,12 @@ import type { Cheerio } from 'cheerio';
 import type { Element } from 'domhandler';
 import type { Page } from 'puppeteer';
 import { load } from 'cheerio';
-import dayjs from 'dayjs';
 
 import type { ChapterPerformanceReport, WeeklyChecklist, WeeklyChecklistReport } from '@/interfaces';
 import type { ScraperScope } from '@/lib/Scraper';
+import dayjs from '@/lib/Dayjs';
 import { Scraper } from '@/lib/Scraper';
+import { isValidDate } from '@/utils/datetime';
 import env from '@/utils/env';
 
 const WEEKLY_CHECKLIST_URL = `${env.MNO_BASE_URL}/${env.MNO_WEEKLY_CHECKLIST_PATH}`;
@@ -42,17 +43,17 @@ export default class WeeklyChecklistProcessor {
 
     console.log('Navigating to Weekly Checklist page...');
 
-    const startDate = dayjs(env.REPORT_START_DATE);
-    const endDate = dayjs(env.REPORT_END_DATE);
-
-    if (!startDate.isValid() || !endDate.isValid()) {
+    if (!isValidDate(env.REPORT_START_DATE) || !isValidDate(env.REPORT_END_DATE)) {
       throw new Error('Invalid start or end date');
     }
+
+    const startDate = dayjs(env.REPORT_START_DATE).format('MM/DD/YYYY');
+    const endDate = dayjs(env.REPORT_END_DATE).format('MM/DD/YYYY');
 
     try {
       await this._page.goto(WEEKLY_CHECKLIST_URL, { waitUntil: 'networkidle0' });
       await this._page.waitForSelector('input[name="date"]');
-      await this._page.type('input[name="date"]', `${startDate.format('MM/DD/YYYY')} - ${endDate.format('MM/DD/YYYY')}`);
+      await this._page.type('input[name="date"]', `${startDate} - ${endDate}`);
       await this._page.keyboard.press('Enter');
       await this._page.waitForNetworkIdle();
 

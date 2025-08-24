@@ -1,6 +1,8 @@
 import { createEnv } from '@t3-oss/env-core';
-import dayjs from 'dayjs';
 import { z } from 'zod';
+
+import dayjs from '@/lib/Dayjs';
+import { isValidDate } from './datetime';
 
 const stringToBooleanSchema = z.string().transform(val => val === 'true');
 const dateSchema = z
@@ -8,7 +10,7 @@ const dateSchema = z
   .regex(/^\d{4}-\d{2}-\d{2}$/)
   .refine(val => {
     const date = dayjs(val);
-    return date.isValid() && date.format('YYYY-MM-DD') === val;
+    return isValidDate(date) && dayjs(date).format('YYYY-MM-DD') === val;
   });
 
 export default createEnv({

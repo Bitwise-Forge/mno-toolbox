@@ -1,6 +1,6 @@
-import dayjs from 'dayjs';
-
 import type { ChapterPerformanceReport } from '@/interfaces';
+import dayjs from '@/lib/Dayjs';
+import { formatDateWithTzSupport } from '@/utils/datetime';
 import { getPercentage } from '@/utils/numberUtils';
 import { dedent } from '@/utils/stringUtils';
 
@@ -79,7 +79,7 @@ export default class ChapterReportGenerator {
   }
 
   get report() {
-    const reportDate = dayjs().format('MM/DD/YYYY hh:mm A');
+    const reportDate = formatDateWithTzSupport(dayjs(), 'MM/DD/YYYY hh:mm A z');
     const lines = [
       '\n',
       '\n',

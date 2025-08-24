@@ -1,6 +1,6 @@
-import dayjs from 'dayjs';
-
 import type { WeeklyChecklistReport } from '@/interfaces';
+import dayjs from '@/lib/Dayjs';
+import { formatDateWithTzSupport } from '@/utils/datetime';
 import { getPercentage } from '@/utils/numberUtils';
 import { dedent } from '@/utils/stringUtils';
 
@@ -24,7 +24,7 @@ export default class ChecklistReportGenerator {
   }
 
   get report() {
-    const reportDate = dayjs().format('MM/DD/YYYY hh:mm A');
+    const reportDate = formatDateWithTzSupport(dayjs(), 'MM/DD/YYYY hh:mm A z');
     const lines: string[] = [
       '\n',
       '\n',
