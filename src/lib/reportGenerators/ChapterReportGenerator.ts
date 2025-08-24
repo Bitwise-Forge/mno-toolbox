@@ -20,18 +20,18 @@ export default class ChapterReportGenerator {
       { type: 'Low Activity', count: lowActivityList.length },
     ]
       .filter(({ count }) => count > 0)
-      .map(({ count, type }) => ` - ${type}: ${count} (${getPercentage(count, totalMembers)}%)`);
+      .map(({ count, type }) => `   - ${type}: ${count} (${getPercentage(count, totalMembers)}%)`);
 
-    return [`Total Members: ${totalMembers}`, ...activityLists].join('\n');
+    return ['👥 Chapter Members', `   - Total: ${totalMembers}`, ...activityLists].join('\n');
   }
 
   private get socialMediaSubReport(): string {
     const { avgPostsPerMember, avgRoundsOfPosts, totalPosts } = this._reportData.socialMedia;
 
     return [
-      `Total Posts: ${totalPosts}`,
-      ` - Avg. Posts per Member: ${avgPostsPerMember}`,
-      ` - Avg. Rounds of Posts: ${avgRoundsOfPosts.raw} → ${avgRoundsOfPosts.rounded}`,
+      `   - Total: ${totalPosts}`,
+      `   - Avg. Posts per Member: ${avgPostsPerMember}`,
+      `   - Avg. Rounds of Posts: ${avgRoundsOfPosts.raw} → ${avgRoundsOfPosts.rounded}`,
     ].join('\n');
   }
 
@@ -50,9 +50,9 @@ export default class ChapterReportGenerator {
 
     const populatedSessionTypes = sessionTypeSubReport
       .filter(({ count }) => count > 0)
-      .map(({ count, type }) => ` - ${type}: ${count}`);
+      .map(({ count, type }) => `   - ${type}: ${count}`);
 
-    return [`Total Sessions: ${total}`, ...populatedSessionTypes].join('\n');
+    return [`   - Total: ${total}`, ...populatedSessionTypes].join('\n');
   }
 
   private get eventsSubReport(): string {
@@ -69,14 +69,15 @@ export default class ChapterReportGenerator {
       { type: 'Training', count: training },
     ];
 
-    const populatedEventTypes = eventTypeSubReport.filter(({ count }) => count > 0).map(({ count, type }) => ` - ${type}: ${count}`);
-    return [`Total Events: ${total}`, ...populatedEventTypes].join('\n');
+    const populatedEventTypes = eventTypeSubReport.filter(({ count }) => count > 0).map(({ count, type }) => `   - ${type}: ${count}`);
+    return [`   - Total: ${total}`, ...populatedEventTypes].join('\n');
   }
 
   private get referralsAndBusinessBucksSubReport(): string {
     const { businessBucks, referrals } = this._reportData.referralsAndBusinessBucks;
+    const formattedBusinessBucks = Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(businessBucks);
 
-    return [`Referrals: ${referrals}`, `Business Bucks: ${businessBucks}`].join('\n');
+    return [`   - Referrals: ${referrals}`, `   - Business Bucks: ${formattedBusinessBucks}`].join('\n');
   }
 
   get report() {
@@ -91,7 +92,7 @@ export default class ChapterReportGenerator {
       '--------------------------------',
       '\n',
       '\n',
-      `📣 Weekly Chapter Performance Report`,
+      `📣 Chapter Weekly Performance Report`,
       '\n',
       `   Generated on: ${reportDate}`,
       '\n',

@@ -18,9 +18,10 @@ export default class ChecklistReportGenerator {
     const missingChecklistsPercentage = getPercentage(missingChecklists.length, membersList.length);
 
     return [
-      `Total Members: ${membersList.length}`,
-      ` - Weekly Checklists Created: ${total} (${hasChecklistPercentage}%)`,
-      ` - Weekly Checklists Missing: ${missingChecklists.length} (${missingChecklistsPercentage}%)`,
+      '👥 Chapter Members',
+      `   - Total: ${membersList.length}`,
+      `   - Weekly Checklists Created: ${total} (${hasChecklistPercentage}%)`,
+      `   - Weekly Checklists Missing: ${missingChecklists.length} (${missingChecklistsPercentage}%)`,
     ].join('\n');
   }
 
@@ -36,7 +37,7 @@ export default class ChecklistReportGenerator {
       '--------------------------------',
       '\n',
       '\n',
-      `📣 Weekly Checklist Report`,
+      `📣 Chapter Weekly Checklist Report`,
       '\n',
       `   Generated on: ${reportDate}`,
       '\n',

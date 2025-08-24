@@ -35,7 +35,7 @@ describe('ChecklistReportGenerator', () => {
     it('should generate correct members sub-report with percentages', () => {
       const report = generator.report;
 
-      expect(report).toContain('Total Members: 5');
+      expect(report).toContain('Total: 5');
       expect(report).toContain('Weekly Checklists Created: 15 (300%)');
       expect(report).toContain('Weekly Checklists Missing: 2 (40%)');
     });
@@ -49,7 +49,7 @@ describe('ChecklistReportGenerator', () => {
       const zeroGenerator = new ChecklistReportGenerator(mockZeroChecklistsData);
       const report = zeroGenerator.report;
 
-      expect(report).toContain('Total Members: 3');
+      expect(report).toContain('Total: 3');
       expect(report).toContain('Weekly Checklists Created: 0 (0%)');
       expect(report).toContain('Weekly Checklists Missing: 3 (100%)');
     });
@@ -58,7 +58,7 @@ describe('ChecklistReportGenerator', () => {
       const allGenerator = new ChecklistReportGenerator(mockAllChecklistsData);
       const report = allGenerator.report;
 
-      expect(report).toContain('Total Members: 3');
+      expect(report).toContain('Total: 3');
       expect(report).toContain('Weekly Checklists Created: 3 (100%)');
       expect(report).toContain('Weekly Checklists Missing: 0 (0%)');
     });
@@ -68,11 +68,12 @@ describe('ChecklistReportGenerator', () => {
     it('should generate main report with correct format', () => {
       const report = generator.report;
 
-      expect(report).toContain('📣 Weekly Checklist Report');
+      expect(report).toContain('📣 Chapter Weekly Checklist Report');
 
       expect(report).toContain('--------------------------------');
 
-      expect(report).toContain('Total Members: 5');
+      expect(report).toContain('05:30 AM');
+      expect(report).toContain('Total: 5');
       expect(report).toContain('Weekly Checklists Created: 15 (300%)');
       expect(report).toContain('Weekly Checklists Missing: 2 (40%)');
     });
@@ -83,22 +84,6 @@ describe('ChecklistReportGenerator', () => {
       expect(report).toContain('\n');
       expect(report).not.toMatch(/\s+$/);
       expect(report.trim()).toBeTruthy();
-    });
-
-    it('should generate report with current system time', () => {
-      const report = generator.report;
-
-      expect(report).toContain('📣 Weekly Checklist Report');
-      expect(report).toContain('05:30 AM');
-    });
-
-    it('should generate report with different system times', () => {
-      vi.setSystemTime(new Date('2024-06-15T14:45:00.000Z'));
-      const differentGenerator = new ChecklistReportGenerator(mockChecklistReportData);
-      const report = differentGenerator.report;
-
-      expect(report).toContain('📣 Weekly Checklist Report');
-      vi.setSystemTime(new Date('2024-12-25T10:30:00.000Z'));
     });
   });
 
@@ -158,7 +143,7 @@ describe('ChecklistReportGenerator', () => {
       const largeGenerator = new ChecklistReportGenerator(mockLargeData);
       const report = largeGenerator.report;
 
-      expect(report).toContain('Total Members: 1000');
+      expect(report).toContain('Total: 1000');
       expect(report).toContain('Weekly Checklists Created: 999999 (99999.9%)');
       expect(report).toContain('Weekly Checklists Missing: 0 (0%)');
     });
