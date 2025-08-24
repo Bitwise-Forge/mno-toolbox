@@ -2,7 +2,7 @@ import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
 
 import dayjs from '@/lib/Dayjs';
-import { isValidDate } from './datetime';
+import { isValidDate } from '@/utils/datetime';
 
 const stringToBooleanSchema = z.string().transform(val => val === 'true');
 const dateSchema = z

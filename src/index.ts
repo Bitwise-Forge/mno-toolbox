@@ -3,8 +3,8 @@ import MemberDataProcessor from '@/lib/processors/MemberDataProcessor';
 import SessionDataProcessor from '@/lib/processors/SessionDataProcessor';
 import WeeklyChecklistProcessor from '@/lib/processors/WeeklyChecklistProcessor';
 import ChapterReportGenerator from '@/lib/reportGenerators/ChapterReportGenerator';
+import ChecklistReportGenerator from '@/lib/reportGenerators/ChecklistReportGenerator';
 import { Scraper } from '@/lib/Scraper';
-import ChecklistReportGenerator from './lib/reportGenerators/ChecklistReportGenerator';
 
 const generateChapterReport = async () => {
   const memberDataProcessor = new MemberDataProcessor();

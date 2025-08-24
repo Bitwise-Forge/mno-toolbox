@@ -1,6 +1,7 @@
 import type { ChapterPerformanceReport } from '@/interfaces';
 import dayjs from '@/lib/Dayjs';
 import { formatDateWithTzSupport } from '@/utils/datetime';
+import env from '@/utils/env';
 import { getPercentage } from '@/utils/numberUtils';
 import { dedent } from '@/utils/stringUtils';
 
@@ -80,13 +81,22 @@ export default class ChapterReportGenerator {
 
   get report() {
     const reportDate = formatDateWithTzSupport(dayjs(), 'MM/DD/YYYY hh:mm A z');
+    const weekStart = formatDateWithTzSupport(dayjs(env.REPORT_START_DATE), 'MM/DD/YYYY');
+    const weekEnd = formatDateWithTzSupport(dayjs(env.REPORT_END_DATE), 'MM/DD/YYYY');
+    const reportWeek = `(${weekStart} - ${weekEnd})`;
+
     const lines = [
       '\n',
       '\n',
       '--------------------------------',
       '\n',
       '\n',
-      `📣 Weekly Chapter Performance Report (as of ${reportDate})`,
+      `📣 Weekly Chapter Performance Report`,
+      '\n',
+      `   Generated on: ${reportDate}`,
+      '\n',
+      '\n',
+      `📅 MNO Week: ${reportWeek}`,
       '\n',
       '\n',
       this.membersSubReport,

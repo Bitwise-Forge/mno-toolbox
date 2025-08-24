@@ -95,7 +95,7 @@ cp .env.example .env
 pnpm gen-chapter-report
 ```
 
-- Weekly checklist (uses `REPORT_START_DATE`/`REPORT_END_DATE`):
+- Weekly checklist:
 
 ```bash
 pnpm gen-checklist-report
