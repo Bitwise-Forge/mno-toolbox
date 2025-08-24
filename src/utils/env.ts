@@ -25,7 +25,7 @@ export default createEnv({
     MNO_SM_REPORT_PATH: z.string().min(1),
     MNO_USERNAME: z.email(),
     MNO_WEEKLY_CHECKLIST_PATH: z.string().min(1),
-    NODE_ENV: z.enum(['development', 'production']).default('development'),
+    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     PUPPETEER_HEADLESS_MODE: stringToBooleanSchema,
     REPORT_START_DATE: dateSchema,
     REPORT_END_DATE: dateSchema,

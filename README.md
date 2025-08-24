@@ -118,6 +118,25 @@ pnpm test:coverage
 pnpm test:watch
 ```
 
+### Test Environment
+
+Tests use a dedicated `.env.test` file for consistent, isolated testing:
+
+```bash
+# Create test environment file
+cp .env.example .env.test
+
+# Edit .env.test with test values
+# Tests will automatically use this file via dotenv-cli
+```
+
+**Key benefits:**
+
+- **Isolated testing** - test environment separate from development
+- **Consistent results** - same environment variables every test run
+- **No conflicts** - won't interfere with your development `.env`
+- **Easy maintenance** - update test config in one place
+
 ---
 
 ## Code Quality
@@ -172,6 +191,9 @@ pnpm clean
   - The MNO page structure may have changed; update selectors in the corresponding processor
 - **Date input issues (weekly checklist)**
   - Ensure dates are valid and parseable (e.g., `YYYY-MM-DD`)
+- **Test failures due to environment variables**
+  - Ensure `.env.test` file exists and contains all required variables
+  - Run `cp .env.example .env.test` and update with test values
 
 ---
 

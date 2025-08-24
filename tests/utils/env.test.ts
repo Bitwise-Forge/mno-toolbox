@@ -1,4 +1,3 @@
-import { mockEnv } from '~/mocks/env';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('env', () => {
@@ -6,7 +5,6 @@ describe('env', () => {
 
   beforeEach(() => {
     originalEnv = { ...process.env };
-    process.env = { ...mockEnv };
     vi.resetModules();
   });
 
@@ -158,13 +156,13 @@ describe('env', () => {
     it('should successfully validate a complete valid environment', async () => {
       const { default: env } = await import('@/utils/env');
 
-      expect(env.MNO_BASE_URL).toBe('https://example.com');
-      expect(env.MNO_USERNAME).toBe('test@example.com');
-      expect(env.MNO_PASSWORD).toBe('testPassword');
-      expect(env.NODE_ENV).toBe('development');
+      expect(env.MNO_BASE_URL).toBe('https://example.mnoapp.com');
+      expect(env.MNO_USERNAME).toBe('you@example.com');
+      expect(env.MNO_PASSWORD).toBe('yourpassword');
+      expect(env.NODE_ENV).toBe('test');
       expect(env.PUPPETEER_HEADLESS_MODE).toBe(true);
-      expect(env.REPORT_START_DATE).toBe('2024-01-01');
-      expect(env.REPORT_END_DATE).toBe('2024-12-31');
+      expect(env.REPORT_START_DATE).toBe('2025-08-22');
+      expect(env.REPORT_END_DATE).toBe('2025-08-28');
     });
 
     it('should handle emptyStringAsUndefined option correctly', async () => {

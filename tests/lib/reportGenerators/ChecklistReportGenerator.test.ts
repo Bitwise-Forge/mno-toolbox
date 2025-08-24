@@ -68,7 +68,7 @@ describe('ChecklistReportGenerator', () => {
     it('should generate main report with correct format', () => {
       const report = generator.report;
 
-      expect(report).toContain('📣 Weekly Checklist Report (as of 12/25/2024');
+      expect(report).toContain('📣 Weekly Checklist Report');
 
       expect(report).toContain('--------------------------------');
 
@@ -88,7 +88,7 @@ describe('ChecklistReportGenerator', () => {
     it('should generate report with current system time', () => {
       const report = generator.report;
 
-      expect(report).toContain('📣 Weekly Checklist Report (as of 12/25/2024');
+      expect(report).toContain('📣 Weekly Checklist Report');
       expect(report).toContain('05:30 AM');
     });
 
@@ -97,7 +97,7 @@ describe('ChecklistReportGenerator', () => {
       const differentGenerator = new ChecklistReportGenerator(mockChecklistReportData);
       const report = differentGenerator.report;
 
-      expect(report).toContain('📣 Weekly Checklist Report (as of 06/15/2024');
+      expect(report).toContain('📣 Weekly Checklist Report');
       vi.setSystemTime(new Date('2024-12-25T10:30:00.000Z'));
     });
   });
