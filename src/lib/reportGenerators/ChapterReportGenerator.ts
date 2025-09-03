@@ -94,7 +94,7 @@ export default class ChapterReportGenerator {
       '\n',
       `📣 Chapter Weekly Performance Report`,
       '\n',
-      `   Generated on: ${reportDate}`,
+      `      Generated on: ${reportDate}`,
       '\n',
       '\n',
       `📅 MNO Week: ${reportWeek}`,

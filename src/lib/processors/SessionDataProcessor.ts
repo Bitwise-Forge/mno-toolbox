@@ -119,6 +119,7 @@ export default class SessionDataParser {
 
   private countSessionTypes(): void {
     this._validSessions.forEach(({ type }) => {
+      if (type.trim() === '') return this._counts.unknown++;
       this._counts[type.toLowerCase().split(' ')[0]]++;
     });
   }
