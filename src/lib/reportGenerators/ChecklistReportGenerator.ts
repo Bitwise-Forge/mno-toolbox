@@ -39,7 +39,7 @@ export default class ChecklistReportGenerator {
       '\n',
       `📣 Chapter Weekly Checklist Report`,
       '\n',
-      `   Generated on: ${reportDate}`,
+      `      Generated on: ${reportDate}`,
       '\n',
       '\n',
       `📅 MNO Week: ${reportWeek}`,
