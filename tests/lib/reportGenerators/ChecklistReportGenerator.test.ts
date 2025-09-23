@@ -68,7 +68,7 @@ describe('ChecklistReportGenerator', () => {
     it('should generate main report with correct format', () => {
       const report = generator.report;
 
-      expect(report).toContain('📣 Chapter Weekly Checklist Report');
+      expect(report).toContain('📣 Chapter Checklist Report');
 
       expect(report).toContain('--------------------------------');
 
