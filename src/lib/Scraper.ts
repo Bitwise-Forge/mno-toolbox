@@ -4,7 +4,7 @@ import puppeteer from 'puppeteer';
 
 import env from '@/utils/env';
 
-export type ScraperScope = 'members' | 'sessions' | 'events' | 'weekly-checklist';
+export type ScraperScope = 'members' | 'sessions' | 'events' | 'visitors' | 'weekly-checklist';
 
 const BASE_URL = env.MNO_BASE_URL;
 const LOGIN_URL = `${BASE_URL}/${env.MNO_LOGIN_PATH}`;

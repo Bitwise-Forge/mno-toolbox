@@ -1,4 +1,8 @@
 export type ChapterPerformanceReport = {
+  visitors: {
+    totalVisitors: number;
+    visitorsList: string[];
+  };
   members: {
     totalMembers: number;
     membersList: string[];

@@ -24,6 +24,7 @@ export default createEnv({
     MNO_SESSION_REPORT_PATH: z.string().min(1),
     MNO_SM_REPORT_PATH: z.string().min(1),
     MNO_USERNAME: z.email(),
+    MNO_VISITORS_PATH: z.string().min(1),
     MNO_WEEKLY_CHECKLIST_PATH: z.string().min(1),
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     PUPPETEER_HEADLESS_MODE: stringToBooleanSchema,

@@ -1,6 +1,7 @@
 import EventDataProcessor from '@/lib/processors/EventDataProcessor';
 import MemberDataProcessor from '@/lib/processors/MemberDataProcessor';
 import SessionDataProcessor from '@/lib/processors/SessionDataProcessor';
+import VisitorDataProcessor from '@/lib/processors/VisitorDataProcessor';
 import WeeklyChecklistProcessor from '@/lib/processors/WeeklyChecklistProcessor';
 import ChapterReportGenerator from '@/lib/reportGenerators/ChapterReportGenerator';
 import ChecklistReportGenerator from '@/lib/reportGenerators/ChecklistReportGenerator';
@@ -10,15 +11,24 @@ const generateChapterReport = async () => {
   const memberDataProcessor = new MemberDataProcessor();
   const sessionDataProcessor = new SessionDataProcessor();
   const eventDataProcessor = new EventDataProcessor();
+  const visitorDataProcessor = new VisitorDataProcessor();
 
-  await Promise.all([memberDataProcessor.init(), sessionDataProcessor.init(), eventDataProcessor.init()]);
+  await Promise.all([memberDataProcessor.init(), sessionDataProcessor.init(), eventDataProcessor.init(), visitorDataProcessor.init()]);
 
   const members = memberDataProcessor.memberReportData;
   const socialMedia = memberDataProcessor.socialMediaData;
   const sessions = sessionDataProcessor.sessionReportData;
   const events = eventDataProcessor.eventReportData;
+  const visitors = visitorDataProcessor.visitorReportData;
   const referralsAndBusinessBucks = memberDataProcessor.referralsAndBusinessBucksData;
-  const chapterReportGenerator = new ChapterReportGenerator({ members, socialMedia, sessions, events, referralsAndBusinessBucks });
+  const chapterReportGenerator = new ChapterReportGenerator({
+    members,
+    socialMedia,
+    sessions,
+    events,
+    referralsAndBusinessBucks,
+    visitors,
+  });
 
   console.log(chapterReportGenerator.report);
   console.log(chapterReportGenerator.unblindedReport);

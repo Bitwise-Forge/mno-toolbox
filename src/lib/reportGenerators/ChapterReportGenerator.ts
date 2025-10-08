@@ -25,6 +25,11 @@ export default class ChapterReportGenerator {
     return ['👥 Chapter Members', `   - Total: ${totalMembers}`, ...activityLists].join('\n');
   }
 
+  private get visitorsSubReport(): string {
+    const { totalVisitors } = this._reportData.visitors;
+    return [`   - Invited: ${totalVisitors}`].join('\n');
+  }
+
   private get socialMediaSubReport(): string {
     const { avgPostsPerMember, avgRoundsOfPosts, totalPosts } = this._reportData.socialMedia;
 
@@ -108,7 +113,7 @@ export default class ChapterReportGenerator {
       this.socialMediaSubReport,
       '\n',
       '\n',
-      '🤝 Sessions',
+      '🗣️  Sessions',
       '\n',
       this.sessionsSubReport,
       '\n',
@@ -121,13 +126,18 @@ export default class ChapterReportGenerator {
       '💰 Referrals + Business Bucks',
       '\n',
       this.referralsAndBusinessBucksSubReport,
+      '\n',
+      '\n',
+      '🤝 Visitors',
+      '\n',
+      this.visitorsSubReport,
     ];
 
     return dedent`${lines.join('')}`;
   }
 
   get unblindedReport() {
-    const { events, members, referralsAndBusinessBucks, sessions } = this._reportData;
+    const { events, members, referralsAndBusinessBucks, sessions, visitors } = this._reportData;
     const { lowActivityList, zeroActivityList } = members;
     const { submittedBy: sessionSubmittedBy } = sessions;
     const { submittedBy: eventsSubmittedBy } = events;
@@ -140,6 +150,7 @@ export default class ChapterReportGenerator {
     const eventAttendees = eventsSubmittedBy.length ? eventsSubmittedBy.join(', ') : 'None';
     const referralsList = referrers.length ? referrers.join(', ') : 'None';
     const businessBucksList = businessBucksReceivers.length ? businessBucksReceivers.join(', ') : 'None';
+    const visitorsList = visitors.visitorsList.length ? visitors.visitorsList.join(', ') : 'None';
 
     const lines = [
       '\n',
@@ -183,6 +194,11 @@ export default class ChapterReportGenerator {
       'Business Bucks:',
       '\n',
       businessBucksList,
+      '\n',
+      '\n',
+      'Visitors:',
+      '\n',
+      visitorsList,
     ];
 
     return dedent`${lines.join('')}`;
