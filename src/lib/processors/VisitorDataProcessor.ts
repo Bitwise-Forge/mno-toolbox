@@ -83,8 +83,12 @@ export default class VisitorDataParser {
     console.log(`Successfully parsed ${this._visitorReportData.length} visitors from table`);
   }
 
+  private get visitorsList(): string[] {
+    return this._visitorReportData.toSorted((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+  }
+
   get visitorReportData(): ChapterPerformanceReport['visitors'] {
-    const visitorsList = this._visitorReportData;
+    const visitorsList = this.visitorsList;
     return { totalVisitors: visitorsList.length, visitorsList };
   }
 }

@@ -113,7 +113,7 @@ export default class ChapterReportGenerator {
       this.socialMediaSubReport,
       '\n',
       '\n',
-      '🗣️  Sessions',
+      '🗣️ Sessions',
       '\n',
       this.sessionsSubReport,
       '\n',
