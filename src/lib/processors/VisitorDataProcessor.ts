@@ -77,6 +77,7 @@ export default class VisitorDataParser {
       const cells = $(row).find('td');
       const visitorName = cells.eq(0).text().trim();
 
+      if (visitorName.includes(' data')) return;
       this._visitorReportData.push(visitorName);
     });
 
