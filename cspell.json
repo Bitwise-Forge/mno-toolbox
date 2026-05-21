@@ -1,0 +1,20 @@
+{
+  "version": "0.2",
+  "ignorePaths": [".vscode/*"],
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "words": [
+    "domhandler",
+    "networkidle",
+    "oxfmt",
+    "oxlint",
+    "parseable",
+    "supergroups",
+    "unblinded",
+    "vitestcache",
+    "yoavbls",
+    "yourpassword"
+  ],
+  "ignoreWords": [],
+  "import": []
+}

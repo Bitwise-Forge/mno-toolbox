@@ -1,9 +1,3 @@
 {
-  "recommendations": [
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "streetsidesoftware.code-spell-checker",
-    "vitest.explorer",
-    "yoavbls.pretty-ts-errors"
-  ]
+  "recommendations": ["oxc.oxc-vscode", "streetsidesoftware.code-spell-checker", "vitest.explorer", "yoavbls.pretty-ts-errors"]
 }

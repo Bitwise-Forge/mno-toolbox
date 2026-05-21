@@ -1,0 +1,5 @@
+allowBuilds:
+  esbuild: false
+  puppeteer: true
+minimumReleaseAge: 10080
+minimumReleaseAgeStrict: true
