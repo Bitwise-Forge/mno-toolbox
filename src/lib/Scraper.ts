@@ -1,6 +1,6 @@
-import path from 'node:path';
 import type { Browser, Page } from 'puppeteer';
 import puppeteer from 'puppeteer';
+import path from 'node:path';
 
 import env from '@/utils/env';
 

@@ -1,3 +1,6 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import ChecklistReportGenerator from '@/lib/reportGenerators/ChecklistReportGenerator';
 import {
   mockAllChecklistsData,
   mockAllMissingData,
@@ -9,9 +12,6 @@ import {
   mockUnicodeData,
   mockZeroChecklistsData,
 } from '~/mocks/checklistReport';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-import ChecklistReportGenerator from '@/lib/reportGenerators/ChecklistReportGenerator';
 
 describe('ChecklistReportGenerator', () => {
   let generator: ChecklistReportGenerator;
